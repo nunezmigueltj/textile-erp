@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>{% block title %}Moda Project{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    <!-- App-specific CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <ul>
+            <li><a href="{% url 'home:home' %}">Home</a></li>
+            <li><a href="{% url 'fabrics:fabrics_list' %}">Fabrics</a></li>
+            <li><a href="{% url 'colors:colors_list' %}">Colors</a></li>
+            <li><a href="{% url 'users:users_list' %}">Users</a></li>
+            <li><a href="{% url 'companies:companies_list' %}">Companies</a></li>
+        </ul>
+    </nav>
+    <p>
+        {% if user.is_authenticated %}
+           {{ user.get_full_name|upper }} ({{ user.email}})
+        {% endif %}
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'users:logout_view' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% endif %}
+    </p>
+
+    <!-- Main content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; {{ year }} Moda Project</p>
+    </footer>
+
+    <!-- Global JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- App-specific JS -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

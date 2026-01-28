@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Choose company role Page
+{% endblock %}
+
+{% block content %}
+<h1>This is the Choose company role Page!!</h1>
+<p>
+    <a href="{% url 'companies:add_vendor' company.id %}">VENDOR</a>
+</p>
+<p>
+    <a href="{% url 'companies:add_customer' company.id %}">CUSTOMER</a>
+</p>
+{% endblock %}

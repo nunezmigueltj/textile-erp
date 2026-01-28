@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add Company Page
+{% endblock %}
+
+{% block content %}
+<h1>This is the Add Company Page!!</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Add Company</button>
+</form>
+{% endblock %}

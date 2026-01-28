@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Companies Page
+{% endblock %}
+
+{% block content %}
+<h1>Companies HomePage</h1>
+{% if companies %}
+    {% for company in companies %}
+        <p>{{ company }}</p>
+    {% endfor %}
+{% endif %}
+{% endblock %}
