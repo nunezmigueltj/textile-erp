@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import LoginForm, RegisterForm
-from django.contrib.auth.models import User
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, get_user_model
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import never_cache
 
@@ -18,7 +17,8 @@ def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            login(request, form.user)
+            user = form.cleaned_data['user']
+            login(request, user)
             next_url = request.GET.get('next') or 'home:home'
             return redirect(next_url)
     else:
@@ -26,17 +26,16 @@ def login_view(request):
     return render(request, 'users/login.html', {'form':form})
 
 # if user is login, i dont want the user to be able to enter this url..
+@never_cache
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('home:home')
+    
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            User.objects.create_user(
-                username=form.cleaned_data['email'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password'],
-                first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name']
-            )
+            user = form.save() # default commit=True, enters forms.py def save()
+            # login(request, user) # enter with no login html
             return redirect('users:login_view')
     else:
         form = RegisterForm()
