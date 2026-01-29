@@ -130,3 +130,5 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 LOGIN_URL = "users:login_view"
+
+AUTH_USER_MODEL = "users.CustomUser"
