@@ -1,11 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("El campo Email debe estar definido")
+        if not password:
+            raise ValueError("El superusuario debe tener contraseña.")
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -13,6 +14,14 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("El campo Email debe estar definido")
+        if not password:
+            raise ValueError("El usuario debe tener contraseña")
+    
+        # when they use create_superuser(email="admin@test.com",password="1234")
+        # and it doesnt have the is_staff parameter
+        # if some pass is_staff=False it doesnt enter here and go to the validations
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
