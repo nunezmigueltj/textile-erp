@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .forms import LoginForm, RegisterForm
-from django.contrib.auth import login, logout, get_user_model
+from django.contrib.auth import login, logout
 from django.views.decorators.http import require_POST
 from django.views.decorators.cache import never_cache
 
