@@ -3,13 +3,31 @@ from .forms import AddCompanyForm, AddVendorForm, AddCustomerForm
 from .models import Company, Vendor, Customer
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+from django.db.models import Q
+
 
 # Create your views here.
 @never_cache
 @login_required
 def companies_list(request):
-    all_companies = Company.objects.all()
-    return render(request, 'companies/home.html', {'companies': all_companies})
+    # Get vendor and customer company IDs
+    vendor_ids = Vendor.objects.values_list('company_id', flat=True)
+    customer_ids = Customer.objects.values_list('company_id', flat=True)
+
+    # Get companies not assigned as vendor or customer
+    unassigned = Company.objects.exclude(
+        Q(id__in=vendor_ids) | Q(id__in=customer_ids)
+    )
+
+    # Get full vendor and customer objects (for display)
+    vendors = Vendor.objects.select_related('company')
+    customers = Customer.objects.select_related('company')
+
+    return render(request, 'companies/home.html', {
+            'unassigned': unassigned,
+            'vendors': vendors,
+            'customers': customers
+        })
 
 def add_company(request):
     if request.method == "POST":
