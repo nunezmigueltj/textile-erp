@@ -31,30 +31,6 @@ body {
   border-left: 4px solid #3f51b5; /* indigo accent border */
 }
 
-/* Primary action button (e.g., + Add Company) */
-.btn-primary {
-  background-color: #43a047; /* textile green */
-  border-color: #43a047;
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background-color: #388e3c; /* darker green on hover */
-  border-color: #388e3c;
-}
-
-/* Secondary buttons (Cancel, Back, etc.) */
-.btn-secondary {
-  background-color: #6c757d;
-  border-color: #6c757d;
-  color: #fff;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-  border-color: #545b62;
-}
-
 .card {
   border: 1px solid #dee2e6;
   border-radius: 6px;
@@ -63,4 +39,71 @@ body {
 .card-body {
   background-color: #ffffff; /* clean white */
   padding: 1.5rem;
+}
+
+.btn-add {
+  background-color: #43a047;
+  border-color: #43a047;
+  border-radius: 6px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.btn-add:hover {
+  background-color: #388e3c;
+  border-color: #388e3c;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  color: #fff;
+}
+
+/* Secondary buttons (Cancel, Back, etc.) */
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+.btn-edit {
+  background-color: #3f51b5;
+  border-color: #3f51b5;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.btn-edit:hover {
+  background-color: #303f9f;
+  border-color: #303f9f;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  color: #fff;
+}
+
+.btn-delete {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 600;
+}
+.btn-delete:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  color: #fff;
+}
+
+.section-header {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #3f51b5; /* indigo accent */
+  border-left: 4px solid #53c54a; /* green bar */
+  padding-left: 8px;
+  margin-bottom: 1rem;
 }
