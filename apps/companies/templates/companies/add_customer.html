@@ -1,15 +1,22 @@
-{% extends 'base.html' %}
-
-{% block title %}
-Add Customer Page
-{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-<h2>Customer: {{ company.name }}</h2>
+<div class="mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="mb-4">Customer: {{ company.name }}</h4>
+      <form method="post">
+        {% csrf_token %}
+        
+        <!-- Credit Limit -->
+        {% include 'companies/_customer_form.html' with customer_form=form %}
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form }}
-    <button type="submit">Add Customer</button>
-</form>
+        <!-- Actions -->
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'companies:companies_list' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-success">Add Customer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

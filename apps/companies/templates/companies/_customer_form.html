@@ -1,0 +1,12 @@
+<!-- Financial -->
+<!-- Credit Limit -->
+<div class="mb-4">
+    <h6 class="section-header">Financial</h6>
+    <div class="mb-3">
+        {{ customer_form.credit_limit.label_tag }}
+        {{ customer_form.credit_limit }}
+        {% if customer_form.credit_limit.errors %}
+            <div class="text-danger">{{ customer_form.credit_limit.errors }}</div>
+        {% endif %}
+    </div>
+</div>

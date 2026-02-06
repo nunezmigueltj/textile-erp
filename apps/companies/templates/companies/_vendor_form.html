@@ -1,0 +1,12 @@
+<!-- Financial -->
+<!-- Payment Terms -->
+<div class="mb-4">
+    <h6 class="section-header">Financial</h6>
+    <div class="mb-3">
+        {{ vendor_form.payment_terms.label_tag }}
+        {{ vendor_form.payment_terms }}
+        {% if vendor_form.payment_terms.errors %}
+        <div class="text-danger">{{ vendor_form.payment_terms.errors }}</div>
+        {% endif %}
+    </div>
+</div>

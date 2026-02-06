@@ -36,8 +36,14 @@ class AddVendorForm(forms.ModelForm):
     class Meta:
         model = Vendor
         fields = ['payment_terms']
+        widgets = {
+            'payment_terms': forms.TextInput(attrs={'class': 'form-control'})
+        }
 
 class AddCustomerForm(forms.ModelForm):
     class Meta:
         model = Customer
         fields = ['credit_limit']
+        widgets = {
+            'credit_limit': forms.TextInput(attrs={'class': 'form-control'})
+        }
