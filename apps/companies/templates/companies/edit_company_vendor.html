@@ -10,13 +10,7 @@
         {% include "companies/_company_form.html" with form=company_form %}   
 
         <!-- Financial -->
-        <div class="mb-4">
-          <h6 class="section-header">Financial</h6>
-          <div class="mb-3">
-            {{ vendor_form.payment_terms.label_tag }}
-            {{ vendor_form.payment_terms }}
-          </div>
-        </div>
+        {% include "companies/_vendor_form.html" with vendor_form=vendor_form %}
 
         <!-- Actions -->
         <div class="d-flex justify-content-between mt-4">

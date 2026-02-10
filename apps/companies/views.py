@@ -26,11 +26,25 @@ def companies_list(request):
 
     customers = Customer.objects.select_related('company').filter(company__is_active=True).order_by('company__name')
 
+    inactive_unassigned = inactive_vendors = inactive_customers = None
+    if request.user.is_superuser:
+        inactive_vendor_ids = Vendor.objects.filter(company__is_active=False).values_list('company_id', flat=True)
+        inactive_customer_ids = Customer.objects.filter(company__is_active=False).values_list('company_id', flat=True)
+
+        inactive_unassigned = Company.objects.filter(is_active=False).exclude(
+            Q(id__in=inactive_vendor_ids) | Q(id__in=inactive_customer_ids)
+        )
+
+        inactive_vendors = Vendor.objects.select_related('company').filter(company__is_active=False)
+        inactive_customers = Customer.objects.select_related('company').filter(company__is_active=False)
 
     return render(request, 'companies/home.html', {
             'unassigned': unassigned,
             'vendors': vendors,
-            'customers': customers
+            'customers': customers,
+            'inactive_unassigned': inactive_unassigned,
+            'inactive_vendors': inactive_vendors,
+            'inactive_customers': inactive_customers,
         })
 
 
@@ -76,8 +90,8 @@ def edit_company_vendor(request, company_id):
     return render(request, 'companies/edit_company_vendor.html', {
         'company_form': company_form,
         'vendor_form': vendor_form,
-        'company': company,
-        'vendor': vendor
+        # 'company': company,
+        # 'vendor': vendor
     })
 
 
@@ -97,8 +111,8 @@ def edit_company_customer(request, company_id):
     return render(request, 'companies/edit_company_customer.html', {
         'company_form': company_form,
         'customer_form': customer_form,
-        'company': company,
-        'customer': customer
+        # 'company': company,
+        # 'customer': customer
     })
 
 
@@ -155,3 +169,14 @@ def deactivate_company(request, company_id):
         return redirect("companies:companies_list")
     
     return render(request, 'companies/confirm_deactivate.html', {"company": company})
+
+
+def activate_company(request, company_id):
+    company = get_object_or_404(Company, id=company_id)
+
+    if request.method == 'POST':
+        company.is_active = True
+        company.save()
+        return redirect("companies:companies_list")
+    
+    return render(request, 'companies/confirm_activate.html', {"company": company})

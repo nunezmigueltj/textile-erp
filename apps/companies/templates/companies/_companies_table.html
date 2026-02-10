@@ -1,0 +1,116 @@
+<div class="{{ margin_top }}">
+    <!-- Tabs -->
+    <ul class="nav nav-tabs" id="companyTabs">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#{{ vendor_tab }}">Vendors</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#{{ customer_tab }}">Customers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#{{ unassigned_tab }}">Unassigned</a>
+        </li>
+    </ul>
+
+    <!-- Tab Vendors -->
+    <div class="tab-content mt-3">
+        <div class="tab-pane fade show active" id="{{ vendor_tab }}">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Payment Terms</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vendor in vendors %}
+                    <tr>
+                        <td>{{ vendor.company.name }}</td>
+                        <td>{{ vendor.company.address }}</td>
+                        <td>{{ vendor.payment_terms }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'companies:edit_company_vendor' vendor.company.id %}"
+                                class="btn btn-sm btn-edit">Edit</a>
+                            {% if vendor.company.is_active %}
+                            <a href="{% url 'companies:deactivate_company' vendor.company.id %}"
+                                class="btn btn-sm btn-delete">Deactivate</a>
+                            {% else %}
+                            <a href="{% url 'companies:activate_company' vendor.company.id %}"
+                                class="btn btn-sm btn-success">Reactivate</a>
+                            {% endif %}
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="{{ customer_tab }}">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Credit Limit</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td>{{ customer.company.name }}</td>
+                        <td>{{ customer.company.address }}</td>
+                        <td>{{ customer.credit_limit }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'companies:edit_company_customer' customer.company.id %}"
+                                class="btn btn-sm btn-edit">Edit</a>
+                            {% if customer.company.is_active %}
+                            <a href="{% url 'companies:deactivate_company' customer.company.id %}"
+                                class="btn btn-sm btn-delete">Deactivate</a>
+                            {% else %}
+                            <a href="{% url 'companies:activate_company' customer.company.id %}"
+                                class="btn btn-sm btn-success">Reactivate</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="{{ unassigned_tab }}">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for company in unassigned %}
+                    <tr>
+                        <td>{{ company.name }}</td>
+                        <td>{{ company.address }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'companies:assign_company_role' company.id %}"
+                                class="btn btn-sm btn-primary">Assign Role</a>
+                            <a href="{% url 'companies:edit_company' company.id %}" class="btn btn-sm btn-edit">Edit</a>
+                            {% if company.is_active %}
+                            <a href="{% url 'companies:deactivate_company' company.id %}"
+                                class="btn btn-sm btn-delete">Deactivate</a>
+                            {% else %}
+                            <a href="{% url 'companies:activate_company' company.id %}"
+                                class="btn btn-sm btn-success">Reactivate</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
