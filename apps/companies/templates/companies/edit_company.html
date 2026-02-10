@@ -5,11 +5,15 @@
     <div class="card-body">
       <form method="post">
         {% csrf_token %}
-        {% include "companies/_company_form.html" with form=form %}    
+        <h4 class="mb-3">Edit Company</h4>
+        
+        {% include "companies/_company_form.html" with form=form %}   
+
+        
         <!-- Actions -->
         <div class="d-flex justify-content-between mt-4">
           <a href="{% url 'companies:companies_list' %}" class="btn btn-secondary">Cancel</a>
-          <button type="submit" class="btn btn-add">Add Company</button>
+          <button type="submit" class="btn btn-success">Save Changes</button>
         </div>
       </form>
     </div>

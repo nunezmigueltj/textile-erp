@@ -10,13 +10,14 @@ class Company(models.Model):
     country = models.CharField(max_length=100)
     phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
 
     @property
     def address(self):
         return f"{self.street}, {self.city}, {self.state}, {self.zipcode}, {self.country}"
     
     def __str__(self):
-        return f"{self.name} - {self.address}"
+        return f"{self.name} ({'Active' if self.is_active else 'Inactive'}) - {self.address}"
 
 class Vendor(models.Model):
     company = models.OneToOneField(Company, on_delete=models.CASCADE)

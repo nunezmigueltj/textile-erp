@@ -3,13 +3,50 @@ from .forms import AddCompanyForm, AddVendorForm, AddCustomerForm
 from .models import Company, Vendor, Customer
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+from django.db.models import Q
+
 
 # Create your views here.
 @never_cache
 @login_required
 def companies_list(request):
-    all_companies = Company.objects.all()
-    return render(request, 'companies/home.html', {'companies': all_companies})
+    # Get vendor and customer company IDs, filter only active
+    vendor_ids = Vendor.objects.filter(company__is_active=True).values_list('company_id', flat=True)
+    customer_ids = Customer.objects.filter(company__is_active=True).values_list('company_id', flat=True)
+
+    # Get companies not assigned as vendor or customer, filter only active
+    unassigned = Company.objects.filter(is_active=True).exclude(
+        Q(id__in=vendor_ids) | Q(id__in=customer_ids)
+    )
+
+    # Get full vendor and customer objects (for display)
+    # The select_related does the join between company & vendor/customer
+    # filter only active
+    vendors = Vendor.objects.select_related('company').filter(company__is_active=True).order_by('company__name')
+
+    customers = Customer.objects.select_related('company').filter(company__is_active=True).order_by('company__name')
+
+    inactive_unassigned = inactive_vendors = inactive_customers = None
+    if request.user.is_superuser:
+        inactive_vendor_ids = Vendor.objects.filter(company__is_active=False).values_list('company_id', flat=True)
+        inactive_customer_ids = Customer.objects.filter(company__is_active=False).values_list('company_id', flat=True)
+
+        inactive_unassigned = Company.objects.filter(is_active=False).exclude(
+            Q(id__in=inactive_vendor_ids) | Q(id__in=inactive_customer_ids)
+        )
+
+        inactive_vendors = Vendor.objects.select_related('company').filter(company__is_active=False)
+        inactive_customers = Customer.objects.select_related('company').filter(company__is_active=False)
+
+    return render(request, 'companies/home.html', {
+            'unassigned': unassigned,
+            'vendors': vendors,
+            'customers': customers,
+            'inactive_unassigned': inactive_unassigned,
+            'inactive_vendors': inactive_vendors,
+            'inactive_customers': inactive_customers,
+        })
+
 
 def add_company(request):
     if request.method == "POST":
@@ -23,10 +60,71 @@ def add_company(request):
         form = AddCompanyForm()
     return render(request, 'companies/add_company.html', {'form': form})
 
+
+def edit_company(request, company_id):
+    company = get_object_or_404(Company, id=company_id)
+
+    form = AddCompanyForm(request.POST or None, instance=company)
+
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("companies:companies_list")
+    
+    return render(request, "companies/edit_company.html", {"form":form})
+
+
+def edit_company_vendor(request, company_id):
+    company = get_object_or_404(Company, id=company_id)
+    vendor = get_object_or_404(Vendor, company=company)
+
+    company_form = AddCompanyForm(request.POST or None, instance=company)
+    vendor_form = AddVendorForm(request.POST or None, instance=vendor)
+
+    if request.method == "POST":
+        if company_form.is_valid() and vendor_form.is_valid():
+            company_form.save()
+            vendor_form.save()
+            return redirect('companies:companies_list')
+
+    return render(request, 'companies/edit_company_vendor.html', {
+        'company_form': company_form,
+        'vendor_form': vendor_form,
+        # 'company': company,
+        # 'vendor': vendor
+    })
+
+
+def edit_company_customer(request, company_id):
+    company = get_object_or_404(Company, id=company_id)
+    customer = get_object_or_404(Customer, company=company)
+
+    company_form = AddCompanyForm(request.POST or None, instance=company)
+    customer_form = AddCustomerForm(request.POST or None, instance=customer)
+
+    if request.method == "POST":
+        if company_form.is_valid() and customer_form.is_valid():
+            company_form.save()
+            customer_form.save()
+            return redirect('companies:companies_list')
+
+    return render(request, 'companies/edit_company_customer.html', {
+        'company_form': company_form,
+        'customer_form': customer_form,
+        # 'company': company,
+        # 'customer': customer
+    })
+
+
 def choose_company_role(request, company_id):
-    print(company_id)
     company = get_object_or_404(Company, id=company_id)
     return render(request, 'companies/choose_company_role.html', {"company": company})
+
+
+def assign_company_role(request, company_id):
+    company = get_object_or_404(Company, id=company_id)
+    return render(request, 'companies/assign_company_role.html', {"company": company})
+
 
 def add_vendor(request, company_id):
     company = get_object_or_404(Company, id= company_id)
@@ -44,6 +142,7 @@ def add_vendor(request, company_id):
             'company': company
         }) 
 
+
 def add_customer(request, company_id):
     company = get_object_or_404(Company, id= company_id)
     if request.method == 'POST':
@@ -59,3 +158,25 @@ def add_customer(request, company_id):
             'form': form,
             'company': company
         }) 
+
+
+def deactivate_company(request, company_id):
+    company = get_object_or_404(Company, id=company_id)
+
+    if request.method == 'POST':
+        company.is_active = False
+        company.save()
+        return redirect("companies:companies_list")
+    
+    return render(request, 'companies/confirm_deactivate.html', {"company": company})
+
+
+def activate_company(request, company_id):
+    company = get_object_or_404(Company, id=company_id)
+
+    if request.method == 'POST':
+        company.is_active = True
+        company.save()
+        return redirect("companies:companies_list")
+    
+    return render(request, 'companies/confirm_activate.html', {"company": company})

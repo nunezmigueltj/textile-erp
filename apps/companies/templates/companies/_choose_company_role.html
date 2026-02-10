@@ -1,0 +1,23 @@
+<div class="row justify-content-center mb-4">
+    <!-- Vendor Card -->
+    <div class="col-md-5">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-truck fs-1 text-success"></i>
+                <h5 class="mt-3">Vendor</h5>
+                <a href="{% url 'companies:add_vendor' company.id %}" class="btn btn-success mt-3 w-100">Assign as Vendor</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Card -->
+    <div class="col-md-5">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body text-center">
+                <i class="bi bi-person-check fs-1 text-primary"></i>
+                <h5 class="mt-3">Customer</h5>
+                <a href="{% url 'companies:add_customer' company.id %}" class="btn btn-primary mt-3 w-100">Assign as Customer</a>
+            </div>
+        </div>
+    </div>
+</div>

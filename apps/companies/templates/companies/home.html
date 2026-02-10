@@ -5,10 +5,19 @@ Companies Page
 {% endblock %}
 
 {% block content %}
-<h1>Companies HomePage</h1>
-{% if companies %}
-    {% for company in companies %}
-        <p>{{ company }}</p>
-    {% endfor %}
+<div class="mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2></h2>
+        <a href="{% url 'companies:add_company' %}" class="btn btn-add">+ Add Company</a>
+    </div>
+</div>
+
+{% include 'companies/_companies_table.html' with marging_top="" vendor_tab="vendors" customer_tab="customers" unassigned_tab="unassigned" vendors=vendors customers=customers unassigned=unassigned %}
+
+{% if request.user.is_superuser %}
+<h3 class="mt-5 text-danger">Inactive Companies</h3>
+
+{% include 'companies/_companies_table.html' with marging_top="mt-3" vendor_tab="inactive_vendors" customer_tab="inactive_customers" unassigned_tab="inactive_unassigned" vendors=inactive_vendors customers=inactive_customers unassigned=inactive_unassigned %}
 {% endif %}
+
 {% endblock %}

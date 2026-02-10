@@ -1,15 +1,20 @@
-{% extends 'base.html' %}
-
-{% block title %}
-Choose company role Page
-{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-<h1>This is the Choose company role Page!!</h1>
-<p>
-    <a href="{% url 'companies:add_vendor' company.id %}">VENDOR</a>
-</p>
-<p>
-    <a href="{% url 'companies:add_customer' company.id %}">CUSTOMER</a>
-</p>
+<div class="mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body text-center">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold">{{ company.name }}</h3>
+        <h5 class="text-muted">Added successfully</h5>
+        <p class="text-secondary">Choose a role or continue managing companies.</p>
+      </div>
+
+      {% include 'companies/_choose_company_role.html' %}
+
+      <!-- Secondary Options -->
+      {% include 'companies/_choose_company_role_options.html' %}
+
+    </div>
+  </div>
+</div>
 {% endblock %}
