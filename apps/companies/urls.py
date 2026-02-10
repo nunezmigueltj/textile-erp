@@ -29,4 +29,5 @@ urlpatterns = [
     path('edit/<int:company_id>/', views.edit_company, name='edit_company'),
     path('assign_company_role/<int:company_id>/', views.assign_company_role, name='assign_company_role'),
     path('deactivate/<int:company_id>/', views.deactivate_company, name='deactivate_company'),
+    path('activate/<int:company_id>/', views.activate_company, name='activate_company'),
 ]
