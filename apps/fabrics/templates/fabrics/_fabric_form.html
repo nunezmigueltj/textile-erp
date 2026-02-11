@@ -1,0 +1,104 @@
+<!-- Basic Info -->
+<div class="mb-4">
+    <h6 class="section-header">Identification</h6>
+    <div class="mb-3">
+        {{ form.item_code.label_tag }}
+        {{ form.item_code }}
+        {% if form.item_code.errors %}
+        <div class="text-danger">{{ form.item_code.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="mb-3 col-md-6">
+            {{ form.vendor_code.label_tag }}
+            {{ form.vendor_code }}
+            {% if form.vendor_code.errors %}
+            <div class="text-danger">{{ form.vendor_code.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3 col-md-6">
+            {{ form.vendor.label_tag }}
+            {{ form.vendor }}
+            {% if form.vendor.errors %}
+            <div class="text-danger">{{ form.vendor.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Classification -->
+<div class="mb-4">
+    <h6 class="section-header">Classification</h6>
+    <div class="mb-3">
+        {{ form.content.label_tag }}
+        {{ form.content }}
+        {% if form.content.errors %}
+        <div class="text-danger">{{ form.content.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="mb-3 col-md-6">
+            {{ form.fabric_class.label_tag }}
+            {{ form.fabric_class }}
+            {% if form.fabric_class.errors %}
+            <div class="text-danger">{{ form.fabric_class.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3 col-md-6">
+            {{ form.country_of_origin.label_tag }}
+            {{ form.country_of_origin }}
+            {% if form.country_of_origin.errors %}
+            <div class="text-danger">{{ form.country_of_origin.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Specifications -->
+<div class="mb-4">
+    <h6 class="section-header">Specifications</h6>
+    <div class="row">
+        <div class="mb-3 col-md-4">
+            {{ form.weight.label_tag }}
+            {{ form.weight }}
+            {% if form.weight.errors %}
+            <div class="text-danger">{{ form.weight.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3 col-md-4">
+            {{ form.open_or_tubular.label_tag }}
+            {{ form.open_or_tubular }}
+            {% if form.open_or_tubular.errors %}
+            <div class="text-danger">{{ form.open_or_tubular.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3 col-md-4">
+            {{ form.cuttable.label_tag }}
+            {{ form.cuttable }}
+            {% if form.cuttable.errors %}
+            <div class="text-danger">{{ form.cuttable.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Yarn Details -->
+<div class="mb-4">
+    <h6 class="section-header">Yarn Details</h6>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{ form.yarn_type.label_tag }}
+            {{ form.yarn_type }}
+            {% if form.yarn_type.errors %}
+            <div class="text-danger">{{ form.yarn_type.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+            {{ form.yarn_size.label_tag }}
+            {{ form.yarn_size }}
+            {% if form.yarn_size.errors %}
+            <div class="text-danger">{{ form.yarn_size.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

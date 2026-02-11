@@ -5,10 +5,19 @@ Add Fabrics Page
 {% endblock %}
 
 {% block content %}
-<h1>Add Fabrics Page</h1>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button>Submit</button>
-</form>
+<div class="mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {% include 'fabrics/_fabric_form.html' %}
+        <!-- Actions -->
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'fabrics:fabrics_list' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-add">Add Fabric</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

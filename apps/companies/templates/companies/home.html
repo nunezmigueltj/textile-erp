@@ -12,12 +12,12 @@ Companies Page
     </div>
 </div>
 
-{% include 'companies/_companies_table.html' with marging_top="" vendor_tab="vendors" customer_tab="customers" unassigned_tab="unassigned" vendors=vendors customers=customers unassigned=unassigned %}
+{% include 'companies/_companies_table.html' with margin_top="" vendor_tab="vendors" customer_tab="customers" unassigned_tab="unassigned" vendors=vendors customers=customers unassigned=unassigned %}
 
 {% if request.user.is_superuser %}
 <h3 class="mt-5 text-danger">Inactive Companies</h3>
 
-{% include 'companies/_companies_table.html' with marging_top="mt-3" vendor_tab="inactive_vendors" customer_tab="inactive_customers" unassigned_tab="inactive_unassigned" vendors=inactive_vendors customers=inactive_customers unassigned=inactive_unassigned %}
+{% include 'companies/_companies_table.html' with margin_top="mt-3" vendor_tab="inactive_vendors" customer_tab="inactive_customers" unassigned_tab="inactive_unassigned" vendors=inactive_vendors customers=inactive_customers unassigned=inactive_unassigned %}
 {% endif %}
 
 {% endblock %}
