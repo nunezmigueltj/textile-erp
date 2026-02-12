@@ -14,12 +14,13 @@ Fabrics Page
 <div class="mt-5">
     {% include '_search_form.html' %}
 </div>
+
 {% include 'fabrics/_fabrics_table.html' %}
 
-{% if not request.user.is_superuser %}
-<h3 class="mt-5 text-danger">Inactive Companies</h3>
+{% if request.user.is_superuser %}
+<h3 class="mt-5 text-danger">Inactive Fabrics</h3>
 
-{% include 'companies/_companies_table.html' with margin_top="mt-3" vendor_tab="inactive_vendors" customer_tab="inactive_customers" unassigned_tab="inactive_unassigned" vendors=inactive_vendors customers=inactive_customers unassigned=inactive_unassigned %}
+{% include 'fabrics/_inactive_fabrics_table.html' %}
 {% endif %}
 
 {% endblock %}
