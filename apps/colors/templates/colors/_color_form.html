@@ -1,0 +1,27 @@
+<!-- Basic Info -->
+<div class="mb-4">
+    <h6 class="section-header">Identification</h6>
+    <div class="mb-3">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+        {% if form.name.errors %}
+        <div class="text-danger">{{ form.name.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="mb-3 col-md-6">
+        {{ form.code.label_tag }}
+        {{ form.code }}
+        {% if form.code.errors %}
+        <div class="text-danger">{{ form.code.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="mb-3 col-md-6">
+        {{ form.hex_value.label_tag }}
+        {{ form.hex_value }}
+        {% if form.hex_value.errors %}
+        <div class="text-danger">{{ form.hex_value.errors }}</div>
+        {% endif %}
+    </div>
+    </div>
+</div>

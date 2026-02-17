@@ -19,6 +19,7 @@ class Color(models.Model):
     hex_value = models.CharField(max_length=7, blank=True, null=True)
     created_by = models.CharField(max_length=150, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)  # fecha de creación automática
+    is_active = models.BooleanField(default=True)
 
     @property
     def color_name(self):

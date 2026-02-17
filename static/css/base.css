@@ -128,3 +128,9 @@ body {
   padding-left: 8px;
   margin-bottom: 1rem;
 }
+
+input[type="color"] {
+    width: 100%;
+    height: 38px; /* match Bootstrap form-control height */
+}
+
