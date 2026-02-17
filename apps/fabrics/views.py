@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 
 
-# Create your views here.
+# Create your views here. 
 @never_cache
 @login_required
 def fabrics_list(request):
