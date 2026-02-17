@@ -21,4 +21,7 @@ app_name = "fabrics"
 urlpatterns = [
     path('', views.fabrics_list, name="fabrics_list"),
     path('add/', views.add_fabric, name='add_fabric'),
+    path('edit/<int:fabric_id>/', views.edit_fabric, name='edit_fabric'),
+    path('deactivate/<int:fabric_id>/', views.deactivate_fabric, name='deactivate_fabric'),
+    path('activate/<int:fabric_id>/', views.activate_fabric, name='activate_fabric'),
 ]

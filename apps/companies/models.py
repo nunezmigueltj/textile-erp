@@ -24,7 +24,7 @@ class Vendor(models.Model):
     payment_terms = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.company.name} - {self.payment_terms}"
+        return f"{self.company.name}"
 
 class Customer(models.Model):
     company = models.OneToOneField(Company, on_delete=models.CASCADE)

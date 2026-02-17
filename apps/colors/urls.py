@@ -20,5 +20,8 @@ from apps.colors import views
 app_name = "colors"
 urlpatterns = [
     path('', views.colors_list, name='colors_list'),
-    path('add/', views.add_color, name='add_color')
+    path('add/', views.AddColorView.as_view(), name='add_color'),
+    path('edit/<int:pk>', views.EditColorView.as_view(), name='edit_color'),
+    path('deactivate/<int:color_id>', views.deactivate_color, name='deactivate_color'),
+    path('activate/<int:color_id>', views.activate_color, name='activate_color'),
 ]

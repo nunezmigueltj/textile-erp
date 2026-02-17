@@ -19,6 +19,7 @@ class Fabric(models.Model):
     yarn_type = models.CharField(max_length=50, blank=True, null=True)
     yarn_size = models.CharField(max_length=50, blank=True, null=True)
     cuttable = models.IntegerField()
+    is_active = models.BooleanField(default=True)
 
     @property
     def item_merged(self):
