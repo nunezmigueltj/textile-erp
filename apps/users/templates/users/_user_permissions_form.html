@@ -1,0 +1,21 @@
+<div class="mb-5">
+    <h6 class="section-header">Roles & Permissions</h6>
+    <div class="mb-3">
+        {{ form.is_superuser }}
+        <label for="{{ form.is_superuser.id_for_label }}">Superuser (Full access)</label>
+        {% if form.is_superuser.errors %}
+        <div class="text-danger">{{ form.is_superuser.errors }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- <div class="mb-5">
+    <h6 class="section-header">Account status</h6>
+    <div class="mb-3">
+        {{ form.is_active }}
+        <label for="{{ form.is_active.id_for_label }}">Active</label>
+        {% if form.is_active.errors %}
+        <div class="text-danger">{{ form.is_active.errors }}</div>
+        {% endif %}
+    </div>
+</div> -->
