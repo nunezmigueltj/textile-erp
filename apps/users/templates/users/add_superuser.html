@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Add User Page
+{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        
+        {% include 'users/_user_form.html' %}
+
+        {% include 'users/_user_permissions_form.html' %}
+
+        <!-- Actions -->
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'users:users_list' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-add">Add User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

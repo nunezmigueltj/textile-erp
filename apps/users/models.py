@@ -39,12 +39,12 @@ class CustomUser(AbstractUser):
     username = None  
     email = models.EmailField(unique=True)
 
-    avatar = models.ImageField(
-        upload_to="avatars/",
-        null=True,
-        blank=True,
-        default="avatars/default.png"
-    )
+    # avatar = models.ImageField(
+    #     upload_to="avatars/",
+    #     null=True,
+    #     blank=True,
+    #     default="avatars/default.png"
+    # )
 
     USERNAME_FIELD = "email"   # login is with email
     REQUIRED_FIELDS = []       #
