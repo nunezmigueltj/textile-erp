@@ -4,8 +4,12 @@ from django.contrib.auth import authenticate, get_user_model
 User = get_user_model()
 
 class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+                                    "class": "form-control",
+                                }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+                                    "class": "form-control",
+                                }))
 
     def clean(self):
         cleaned_data = super().clean()
