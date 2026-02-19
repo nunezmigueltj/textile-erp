@@ -46,12 +46,16 @@
       <nav class="col-md-2 d-md-block bg-light sidebar vh-100">
         <div class="list-group list-group-flush mt-3">
           <a href="{% url 'fabrics:fabrics_list' %}"
-            class="list-group-item list-group-item-action {% if '/fabrics/' in request.path %}active{% endif %}">
-            <i class="bi bi-stack me-2"></i> Fabrics
+            class="list-group-item list-group-item-action {% if '/fabrics/' in request.path and not '/fabriccolors/' in request.path %}active{% endif %}">
+            🧵 Fabrics
           </a>
           <a href="{% url 'colors:colors_list' %}"
             class="list-group-item list-group-item-action {% if '/colors/' in request.path %}active{% endif %}">
             <i class="bi bi-palette me-2"></i> Colors
+          </a>
+          <a href="{% url 'fabrics:fabriccolors_list' %}"
+            class="list-group-item list-group-item-action {% if '/fabriccolors/' in request.path %}active{% endif %}">
+            <i class="bi bi-stack me-2"></i> Fabric + Colors
           </a>
           <a href="{% url 'companies:companies_list' %}"
             class="list-group-item list-group-item-action {% if '/companies/' in request.path %}active{% endif %}">
