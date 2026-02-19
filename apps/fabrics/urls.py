@@ -24,4 +24,10 @@ urlpatterns = [
     path('edit/<int:fabric_id>/', views.edit_fabric, name='edit_fabric'),
     path('deactivate/<int:fabric_id>/', views.deactivate_fabric, name='deactivate_fabric'),
     path('activate/<int:fabric_id>/', views.activate_fabric, name='activate_fabric'),
+
+    path('fabriccolors/',views.fabriccolors_list, name="fabriccolors_list"),
+    path('fabriccolors/add/',views.AddFabricColor.as_view(), name="add_fabriccolor"),
+    path('fabriccolors/edit/<int:pk>',views.EditFabricColor.as_view(), name="edit_fabriccolor"),
+    path('fabriccolors/deactivate/<int:fabriccolor_id>',views.deactivate_fabriccolor, name="deactivate_fabriccolor"),
+    path('fabriccolors/activate/<int:fabriccolor_id>',views.activate_fabriccolor, name="activate_fabriccolor"),
 ]

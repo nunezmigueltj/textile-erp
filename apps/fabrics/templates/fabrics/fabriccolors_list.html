@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Fabric + Color Page
+{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2></h2>
+        <a href="{% url 'fabrics:add_fabriccolor' %}" class="btn btn-add">+ Add Fabric Color</a>
+    </div>
+</div>
+<div class="mt-5">
+    {% include '_search_form.html' %}
+</div>
+
+{% include 'fabrics/_fabriccolors_table.html' %}
+
+{% if request.user.is_superuser %}
+<h3 class="mt-5 text-danger">Inactive Fabric + Color</h3>
+
+{% include 'fabrics/_inactive_fabriccolors_table.html' %}
+{% endif %}
+
+{% endblock %}

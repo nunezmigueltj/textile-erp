@@ -1,0 +1,48 @@
+<!-- Identification -->
+<div class="text-danger">
+  {{ form.non_field_errors }}
+</div>
+
+<div class="mb-4">
+  <h6 class="section-header">Identification</h6>
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      {{ form.fabric.label_tag }}
+      {{ form.fabric }}
+      {% if form.fabric.errors %}
+      <div class="text-danger">{{ form.fabric.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-12 mb-3">
+      {{ form.color.label_tag }}
+      {{ form.color }}
+      {% if form.color.errors %}
+      <div class="text-danger">{{ form.color.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-12 mb-3">
+      {{ form.lab_dip.label_tag }}
+      {{ form.lab_dip }}
+      {% if form.lab_dip.errors %}
+      <div class="text-danger">{{ form.lab_dip.errors }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Financial Information -->
+<div class="mb-4">
+  <h6 class="section-header">Financial Information</h6>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      {{ form.price.label_tag }}
+      {{ form.price }}
+      {% if form.price.errors %}
+      <div class="text-danger">{{ form.price.errors }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
