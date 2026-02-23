@@ -61,7 +61,8 @@
                         <div class="text-danger">{{ form.password2.errors }}</div>
                         {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                    <button type="submit" class="btn btn-primary w-100 mb-3">Sign Up</button>
+                    <p class="text-muted">Already have an account? <a href="{% url 'users:login_view' %}">Login!</a></p>
                 </form>
             </div>
         </div>

@@ -70,7 +70,8 @@ body {
 }
 
 #btn_login {
-    border-color: rgb(196, 196, 196);
-    background-color: rgb(196, 196, 196);
+    color:rgb(57, 57, 57);
+    border-color: rgb(170, 170, 170);
+    background-color: rgb(170, 170, 170);
 }
 

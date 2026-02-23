@@ -42,7 +42,6 @@ class FabricColor(models.Model):
             models.UniqueConstraint(fields=['fabric', 'color'], name='unique_fabric_color', violation_error_message="This fabric & color is already registered.")
         ]
 
-
     def __str__(self):
         return f"{self.fabric.item_merged} - {self.color.color_name}"
 
