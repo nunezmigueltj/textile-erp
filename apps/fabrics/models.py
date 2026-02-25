@@ -39,7 +39,11 @@ class FabricColor(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['fabric', 'color'], name='unique_fabric_color', violation_error_message="This fabric & color is already registered.")
+            models.UniqueConstraint(
+                fields=['fabric', 'color'], 
+                name='unique_fabric_color', 
+                violation_error_message="This fabric & color is already registered."
+            )
         ]
 
     def __str__(self):

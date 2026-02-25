@@ -57,6 +57,10 @@
             class="list-group-item list-group-item-action {% if '/fabriccolors/' in request.path %}active{% endif %}">
             <i class="bi bi-stack me-2"></i> Fabric + Colors
           </a>
+          <a href="{% url 'garments:garments_list' %}"
+            class="list-group-item list-group-item-action {% if '/garments/' in request.path %}active{% endif %}">
+            👕 Garments
+          </a>
           <a href="{% url 'companies:companies_list' %}"
             class="list-group-item list-group-item-action {% if '/companies/' in request.path %}active{% endif %}">
             <i class="bi bi-buildings me-2"></i> Companies
