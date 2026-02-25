@@ -21,4 +21,8 @@ from apps.garments import views
 app_name = "garments"
 urlpatterns = [
     path('', views.garments_list, name="garments_list"),
+    path('add/', views.AddGarmentStyle.as_view(), name="add_garment"),
+    path('edit/<int:pk>/', views.EditGarmentStyle.as_view(), name="edit_garment"),
+    path('activate/<int:garment_id>/', views.activate_garment, name="activate_garment"),
+    path('deactivate/<int:garment_id>/', views.deactivate_garment, name="deactivate_garment"),
 ]

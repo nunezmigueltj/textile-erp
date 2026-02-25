@@ -5,7 +5,8 @@ from apps.fabrics.models import FabricColor
 class GarmentStyle(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
-    fabrics = models.ManyToManyField(FabricColor, through="GarmentStyleFabricColor")
+    fabrics = models.ManyToManyField(FabricColor, through="GarmentStyleFabricColor", blank=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -15,7 +16,12 @@ class GarmentStyleFabricColor(models.Model):
     fabriccolor = models.ForeignKey(FabricColor, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ("garment_style", "fabriccolor")
+        constraints = [
+            models.UniqueConstraint(
+                fields = ["garment_style", "fabriccolor"],
+                name = "unique_garment_style_fabriccolor"
+            )
+        ]
 
     def __str__(self):
         return f"{self.garment_style.name} - {self.fabriccolor}"
