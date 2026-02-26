@@ -1,0 +1,72 @@
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+}
+
+.split-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.right-panel {
+    flex: 1;
+    background: linear-gradient(135deg, #0a2342, #23295f);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    padding: 2rem;
+}
+
+.login-card {
+    flex: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.card {
+    width: 100%;
+    max-width: 780px;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.btn-primary {
+    background-color: #23295f;
+    border: none;
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+    background-color: #303671 !important;
+}
+
+/* Responsive behavior */
+@media (max-width: 768px) {
+    .split-container {
+        flex-direction: column;
+        /* stack panels vertically */
+    }
+
+    .right-panel {
+        order: -1; /* move right panel above left panel */
+        flex: none;
+        height: 200px;
+        /* smaller banner on mobile */
+        justify-content: center;
+        text-align: center;
+    }
+
+    .login-card {
+        flex: none;
+        padding: 1rem;
+    }
+}
+

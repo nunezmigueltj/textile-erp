@@ -13,7 +13,10 @@
       <tr>
         <td>{{ color.code }}</td>
         <td>{{ color.name }}</td>
-        <td>{{ color.hex_value }}</td>
+        <td>
+          <span class="d-inline-block rounded-circle border" style="width:15px; height:15px; background-color: {{ color.hex_value }};"></span>
+          {{ color.hex_value }}
+        </td>
         <td class="text-end">
           <a href="{% url 'colors:edit_color' color.id %}"
               class="btn btn-sm btn-edit">Edit</a>

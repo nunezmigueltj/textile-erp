@@ -1,5 +1,6 @@
 from django.contrib import admin
-from apps.fabrics.models import Fabric
+from .models import Fabric, FabricColor
 
 # Register your models here.
 admin.site.register(Fabric)
+admin.site.register(FabricColor)

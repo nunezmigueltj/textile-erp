@@ -4,8 +4,12 @@ from django.contrib.auth import authenticate, get_user_model
 User = get_user_model()
 
 class LoginForm(forms.Form):
-    email = forms.EmailField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+                                    "class": "form-control",
+                                }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+                                    "class": "form-control",
+                                }))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -23,12 +27,29 @@ class LoginForm(forms.Form):
 
 
 class RegisterForm(forms.ModelForm):
-    password1 = forms.CharField(widget=forms.PasswordInput)
-    password2 = forms.CharField(widget=forms.PasswordInput)
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={
+                            "class": "form-control"
+                        }), label="Password")
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={
+                            "class": "form-control"
+                        }), label="Confirm Password")
 
     class Meta:
         model = User
-        fields = ("email", "first_name", "last_name", "avatar")
+        fields = ["email", "first_name", "last_name", "is_superuser"]
+        widgets = {
+            "email": forms.EmailInput(attrs={
+                "class": "form-control",
+            }),
+            "first_name": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+            "last_name": forms.TextInput(attrs={
+                "class": "form-control",
+            }),
+            "is_superuser": forms.CheckboxInput(attrs={"class": "form-check-input"},),
+        }
+
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")

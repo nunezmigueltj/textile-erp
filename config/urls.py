@@ -25,4 +25,5 @@ urlpatterns = [
     path('colors/', include('apps.colors.urls', namespace='colors')),
     path('users/', include('apps.users.urls', namespace='users')),
     path('companies/', include('apps.companies.urls', namespace='companies')),
+    path('garments/', include('apps.garments.urls', namespace='garments')),
 ]

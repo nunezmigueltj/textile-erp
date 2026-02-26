@@ -1,14 +1,58 @@
-{% extends 'base.html'%}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Textile ERP - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- important for mobile -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+  <div class="split-container">
+    <div class="left-panel">
+      <h1>TEXTILE ERP</h1>
+    </div>
+    <div class="login-card">
+      <div class="card">
+        <h3 class="text-center mb-4">Welcome</h3>
+        <form method="post">
+          {% csrf_token %}
+          <div class="text-danger">
+            {{ form.non_field_errors }}
+          </div>
+          <div class="mb-3">
+            <label for="id_email" class="form-label">Email</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="text-danger">{{ form.email.errors }}</div>
+            {% endif %}
+          </div>
+          <div class="mb-5">
+            <label for="id_password" class="form-label">Password</label>
+            <div class="input-group">
+              {{ form.password }}
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()" id="btn_login"><i class="bi bi-eye-fill"></i></button>
+            </div>
+            {% if form.password.errors %}
+                <div class="text-danger">{{ form.password.errors }}</div>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+          <p class="text-muted">Not registered? <a href="{% url 'users:register_view' %}">Create an account!</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
 
-{% block title %}
-Login Page
-{% endblock %}
-
-{% block content %}
-<h1>This is the Login Page!!</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Entrar</button>
-</form>
-{% endblock %}
+  <script>
+    function togglePassword() {
+      const btn_login = document.getElementById("btn_login");
+      const input = document.getElementById("id_password");
+      input.type = input.type === "password" ? "text" : "password";
+      btn_login.innerHTML = input.type === "password" ? '<i class="bi bi-eye-fill"></i>' : '<i class="bi bi-eye-slash-fill"></i>';
+    }
+  </script>
+</body>
+</html>

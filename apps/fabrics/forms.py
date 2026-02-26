@@ -1,5 +1,6 @@
 from django import forms
-from .models import Fabric
+from .models import Fabric, FabricColor
+from apps.colors.models import Color
 
 class AddFabricForm(forms.ModelForm):
     class Meta:
@@ -18,4 +19,16 @@ class AddFabricForm(forms.ModelForm):
             'yarn_size': forms.TextInput(attrs={'class': 'form-control'}),
             'cuttable': forms.NumberInput(attrs={'class': 'form-control'}),
             # 'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'company@example.com'}),
+        }
+
+
+class AddFabricColorForm(forms.ModelForm):
+    class Meta:
+        model = FabricColor
+        fields = ['fabric', 'color', 'lab_dip', 'price']
+        widgets = {
+            'fabric': forms.Select(choices=Fabric.objects.filter(is_active=True), attrs={'class': 'form-control'}),
+            'color': forms.Select(choices=Color.objects.filter(is_active=True), attrs={'class': 'form-control'}),
+            'lab_dip': forms.TextInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'})
         }

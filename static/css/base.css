@@ -134,3 +134,15 @@ input[type="color"] {
     height: 38px; /* match Bootstrap form-control height */
 }
 
+.navbar {
+  background-color: #23295f;
+  color:whitesmoke;
+}
+
+.navbar a,
+.navbar a:hover,
+.navbar a:active,
+.navbar a:focus{
+  color:whitesmoke;
+}
+

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'apps.colors',
     'apps.users',
     'apps.companies',
+    'apps.garments',
 ]
 
 MIDDLEWARE = [

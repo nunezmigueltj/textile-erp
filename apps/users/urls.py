@@ -23,4 +23,8 @@ urlpatterns = [
     path('login/', views.login_view, name="login_view"),
     path('register/', views.register_view, name="register_view"),
     path('logout/', views.logout_view, name="logout_view"),
+    path('add/super/', views.AddNewSuperUser.as_view(), name="add_superuser"),
+    path('edit/<int:pk>/', views.EditSuperUser.as_view(), name="edit_user"),
+    path('deactivate/<int:user_id>/', views.deactivate_user, name="deactivate_user"),
+    path('activate/<int:user_id>/', views.activate_user, name="activate_user"),
 ]

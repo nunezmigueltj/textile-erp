@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <h4 class="mb-3">Edit Garment</h4>
+        
+        {% include "garments/_garments_form.html" with form=form %}   
+
+        
+        <!-- Actions -->
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'garments:garments_list' %}" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-success">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
