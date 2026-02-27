@@ -14,17 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from apps.demand import views
 
-
+app_name = "demand"
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('apps.home.urls', namespace='home')),
-    path('fabrics/', include('apps.fabrics.urls', namespace='fabrics')),
-    path('colors/', include('apps.colors.urls', namespace='colors')),
-    path('users/', include('apps.users.urls', namespace='users')),
-    path('companies/', include('apps.companies.urls', namespace='companies')),
-    path('garments/', include('apps.garments.urls', namespace='garments')),
-    path('demand/', include('apps.demand.urls', namespace='demand')),
+    path('', views.demand_list, name='demand_list'),
+    path('add/', views.AddDemand.as_view(), name='add_demand'),
+    path('edit/<int:pk>', views.EditDemand.as_view(), name='edit_demand'),
+    path('activate/<int:demand_id>', views.activate_demand, name='activate_demand'),
+    path('deactivate/<int:demand_id>', views.deactivate_demand, name='deactivate_demand'),
 ]
