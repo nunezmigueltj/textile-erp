@@ -1,0 +1,93 @@
+<!-- General Information -->
+<div class="text-danger">
+    {{ form.non_field_errors }}
+</div>
+
+<div class="mb-4">
+    <h6 class="section-header">General Information</h6>
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            {{ form.po_number.label_tag }}
+            {{ form.po_number }}
+            {% if form.po_number.errors %}
+            <div class="text-danger">{{ form.po_number.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-12 mb-3">
+            {{ form.vendor.label_tag }}
+            {{ form.vendor }}
+            {% if form.vendor.errors %}
+            <div class="text-danger">{{ form.vendor.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-12 mb-3">
+            {{ form.demand.label_tag }}
+            {{ form.demand }}
+            {% if form.demand.errors %}
+            <div class="text-danger">{{ form.demand.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-12 mb-3">
+            {{ form.expected_delivery.label_tag }}
+            {{ form.expected_delivery }}
+            {% if form.expected_delivery.errors %}
+            <div class="text-danger">{{ form.expected_delivery.errors }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="mb-5">
+    <h6 class="section-header">Fabric(s)</h6>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered" id="fabric-table">
+                <thead>
+                    <tr>
+                        <th>Fabric</th>
+                        <th style="width: 20%;">Yards</th>
+                        <th style="width: 20%;">Price</th>
+                        <th style="width: 10%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <select name="fabric[]" class="form-select"></select>
+                        </td>
+                        <td><input type="number" name="quantity[]" class="form-control" min="1"></td>
+                        <td><input type="number" step="0.01" name="price[]" class="form-control"></td>
+                        <td><button type="button" class="btn btn-danger remove-row">X</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-outline-success w-100" id="add-row">+ Add Fabric</button>
+            <br><br>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("add-row").addEventListener("click", function () {
+        let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
+        let newRow = table.rows[0].cloneNode(true);
+        // limpiar valores
+        newRow.querySelectorAll("input").forEach(input => input.value = "");
+        table.appendChild(newRow);
+    });
+
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-row")) {
+            let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
+            let rows_count = table.rows.length;
+            if(rows_count == 1){
+                return;
+            }
+            let row = e.target.closest("tr");
+            row.remove();
+        }
+    });
+</script>
