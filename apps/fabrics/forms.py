@@ -23,12 +23,19 @@ class AddFabricForm(forms.ModelForm):
 
 
 class AddFabricColorForm(forms.ModelForm):
+    fabric = forms.ModelChoiceField(
+        queryset=Fabric.objects.filter(is_active=True),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    color = forms.ModelChoiceField(
+        queryset=Color.objects.filter(is_active=True),
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = FabricColor
         fields = ['fabric', 'color', 'lab_dip', 'price']
         widgets = {
-            'fabric': forms.Select(choices=Fabric.objects.filter(is_active=True), attrs={'class': 'form-control'}),
-            'color': forms.Select(choices=Color.objects.filter(is_active=True), attrs={'class': 'form-control'}),
             'lab_dip': forms.TextInput(attrs={'class': 'form-control'}),
             'price': forms.NumberInput(attrs={'class': 'form-control'})
         }

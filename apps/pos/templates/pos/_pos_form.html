@@ -56,10 +56,13 @@
                 <tbody>
                     <tr>
                         <td>
-                            <select name="fabric[]" class="form-select"></select>
+                            {{ fabric_form.fabric }}
+                            {% if fabric_form.fabric.errors %}
+                            <div class="text-danger">{{ fabric_form.fabric.errors }}</div>
+                            {% endif %}
                         </td>
-                        <td><input type="number" name="quantity[]" class="form-control" min="1"></td>
-                        <td><input type="number" step="0.01" name="price[]" class="form-control"></td>
+                        <td><input type="number" name="yards[]" class="form-control" min="1"></td>
+                        <td><input type="number" step="0.01" name="prices[]" class="form-control" readonly></td>
                         <td><button type="button" class="btn btn-danger remove-row">X</button></td>
                     </tr>
                 </tbody>
