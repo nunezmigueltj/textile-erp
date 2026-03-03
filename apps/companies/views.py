@@ -88,7 +88,7 @@ def edit_company_vendor(request, company_id):
             return redirect('companies:companies_list')
 
     return render(request, 'companies/edit_company_vendor.html', {
-        'company_form': company_form,
+        'company_form': company_form, 
         'vendor_form': vendor_form,
         # 'company': company,
         # 'vendor': vendor
