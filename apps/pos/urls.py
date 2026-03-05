@@ -20,5 +20,6 @@ from apps.pos import views
 app_name = "pos"
 urlpatterns = [
     path('', views.pos_list, name="pos_list"),
-    path('issue/', views.issue_po, name="issue_po")
+    path('issue/', views.issue_po, name="issue_po"),
+    path('edit/<int:po_id>/', views.edit_po, name="edit_po",)
 ]

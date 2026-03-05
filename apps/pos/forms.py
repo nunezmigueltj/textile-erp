@@ -41,13 +41,13 @@ class FabricSelect(Select):
 class AssignPurchaseOrderFabricsForm(forms.ModelForm):
     fabric = forms.ModelChoiceField(
         queryset=FabricColor.objects.filter(is_active=True),
-        widget=FabricSelect(attrs={'class': 'form-select', 'name':'fabrics[]'})
+        widget=FabricSelect(attrs={'class': 'form-select select_fabric', })
     )
 
     class Meta:
         model = PurchaseOrderFabrics
         fields = ['fabric', 'yards']
         widgets = {
-            'yards': forms.NumberInput(attrs={'class': 'form-control'})
+            'yards': forms.NumberInput(attrs={'class': 'form-control', })
         }
 
