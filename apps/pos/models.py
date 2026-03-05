@@ -32,6 +32,15 @@ class PurchaseOrderFabrics(models.Model):
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name="fabrics")
     fabric = models.ForeignKey(FabricColor, on_delete=models.PROTECT)
     yards = models.PositiveIntegerField()
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["purchase_order", "fabric"],
+                name="unique_purchase_order_fabric"
+            )
+        ]
 
     def __str__(self):
-        return f"{self.fabric.name} - {self.yards} yards"
+        return f"{self.purchase_order} | {self.fabric} - {self.yards} yards"

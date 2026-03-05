@@ -6,6 +6,7 @@
         <th scope="col">Ordered Date</th>
         <th scope="col">Expected Delivery</th>
         <th scope="col">Fabrics</th>
+        <th scope="col">Yards</th>
         <th scope="col">Status</th>
         <th class="text-end">Actions</th>
       </tr>
@@ -14,12 +15,29 @@
       {% for pos in page_obj %}
       <tr>
         <td>{{ pos.po_number }}</td>
-        <td>{{ pos.po_number }}</td>
-        <td>{{ pos.po_number }}</td>
-        <td>{{ pos.po_number }}</td>
-        <td>{{ pos.po_number }}</td>
+        <td>{{ pos.order_date }}</td>
+        <td>{{ pos.expected_delivery }}</td>
+        <td>
+          {% if pos.fabrics.all %}
+            {% for fabriccolor in pos.fabrics.all %}
+              <p>{{ fabriccolor.fabric }}</p>
+            {% endfor %}
+          {% else %}
+            <p>No fabrics assigned.</p>
+          {% endif %}
+        </td>
+        <td>
+          {% if pos.fabrics.all %}
+            {% for fabriccolor in pos.fabrics.all %}
+              <p>{{ fabriccolor.yards }}</p>
+            {% endfor %}
+          {% else %}
+            <p>No fabrics assigned.</p>
+          {% endif %}
+        </td>
+        <td><span class="badge rounded-pill bg-warning text-dark p-2">{{ pos.status }}</span></td>
         <td class="text-end">
-          <a href=""
+          <a href="{% url 'pos:edit_po' pos.id %}"
               class="btn btn-sm btn-edit">Edit</a>
           <a href=""
               class="btn btn-sm btn-delete">Close</a>
