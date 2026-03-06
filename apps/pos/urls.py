@@ -21,5 +21,7 @@ app_name = "pos"
 urlpatterns = [
     path('', views.pos_list, name="pos_list"),
     path('issue/', views.issue_po, name="issue_po"),
-    path('edit/<int:po_id>/', views.edit_po, name="edit_po",)
+    path('edit/<int:po_id>/', views.edit_po, name="edit_po"),
+    path('reopen/<int:po_id>/', views.activate_po, name="activate_po"),
+    path('close/<int:po_id>/', views.deactivate_po, name="deactivate_po"),
 ]

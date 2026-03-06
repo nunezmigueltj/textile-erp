@@ -11,6 +11,7 @@ class PurchaseOrder(models.Model):
         ("OPEN", "Open"),
         ("APPROVED", "Approved"),
         ("RECEIVED", "Received"),
+        ("CLOSED", "Closed"),
     ]
 
     po_number = models.CharField(max_length=20, unique=True)
@@ -32,7 +33,6 @@ class PurchaseOrderFabrics(models.Model):
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name="fabrics")
     fabric = models.ForeignKey(FabricColor, on_delete=models.PROTECT)
     yards = models.PositiveIntegerField()
-    is_active = models.BooleanField(default=True)
 
     class Meta:
         constraints = [

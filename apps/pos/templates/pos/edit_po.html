@@ -10,6 +10,7 @@
                 <!-- General Information -->
                 <div class="text-danger">
                     {{ po_form.non_field_errors }}
+                    {{ fabric_forms.non_field_errors }}
                 </div>
 
                 <div class="mb-4">
@@ -103,6 +104,20 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("tr").forEach(row => {
+            const select = row.querySelector(".select_fabric");
+            if (select) {
+                const selected = select.options[select.selectedIndex];
+                const price = selected.dataset.price;
+                const input = row.querySelector("td.prices input");
+                if (price && input) {
+                    input.value = price;
+                }
+            }
+        });
+    });
+
     document.getElementById("add-row").addEventListener("click", function () {
         let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
         let newRow = table.rows[0].cloneNode(true);

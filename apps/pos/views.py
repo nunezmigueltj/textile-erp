@@ -17,7 +17,6 @@ def pos_list(request):
     q = request.GET.get('q')
     DEFAULT_ROWS_PER_PAGE = 25 # default to 25
     rows_per_page = request.GET.get('rowsPerPage', DEFAULT_ROWS_PER_PAGE)
-    print(rows_per_page)
 
     try:
         rows_per_page = int(rows_per_page)
@@ -26,7 +25,7 @@ def pos_list(request):
 
 
     active_pos = PurchaseOrder.objects.filter(is_active=True).order_by('id')
-    inactive_pos = PurchaseOrderFabrics.objects.all()
+    inactive_pos = PurchaseOrder.objects.filter(is_active=False).order_by('id')
 
     if q:
         q=q.strip()
@@ -88,7 +87,7 @@ def issue_po(request):
 
 def edit_po(request, po_id):
     po = get_object_or_404(PurchaseOrder, id=po_id)
-    po_fabrics = PurchaseOrderFabrics.objects.filter(purchase_order=po, is_active=True)
+    po_fabrics = PurchaseOrderFabrics.objects.filter(purchase_order=po)
 
     po_form = IssuePurchaseOrderForm(request.POST or None, instance=po)
     fabric_forms = [AssignPurchaseOrderFabricsForm(instance=fabric) for fabric in po_fabrics]
@@ -103,14 +102,41 @@ def edit_po(request, po_id):
 
                 updated_fabrics_ids = []
 
-                for index,fabric in enumerate(fabrics):
-                    fabric = get_object_or_404(PurchaseOrderFabrics, id=fabric, purchase_order=po)
-                    fabric.yards = yards[index]
-                    fabric.save()
-                    updated_fabrics_ids.append(int(fabric.id))
+                for index, fabric_id in enumerate(fabrics):
+                    po_fabric, created = PurchaseOrderFabrics.objects.get_or_create(
+                        fabric_id=fabric_id,
+                        purchase_order=po,
+                        defaults={"yards": yards[index]}
+                    )
+
+                    if not created:
+                        po_fabric.yards = yards[index]
+                        po_fabric.save()
+                    updated_fabrics_ids.append(po_fabric.pk)
 
                 # delete
-                # po_fabrics.exclude(id__in=updated_fabrics_ids).delete()
+                po_fabrics.exclude(id__in=updated_fabrics_ids).delete()
                 return redirect("pos:pos_list")
 
     return render(request, "pos/edit_po.html", {"po_form": po_form, "fabric_forms": fabric_forms})
+
+
+
+def deactivate_po(request, po_id):
+    po = get_object_or_404(PurchaseOrder, id=po_id)
+    if request.method == 'POST':
+        po.is_active = False
+        po.status = "Closed"
+        po.save()
+        return redirect("pos:pos_list")
+    return render(request, 'pos/confirm_deactivate.html', {"po": po})
+
+
+def activate_po(request, po_id):
+    po = get_object_or_404(PurchaseOrder, id=po_id)
+    if request.method == 'POST':
+        po.is_active = True
+        po.status = "Open"
+        po.save()
+        return redirect("pos:pos_list")
+    return render(request, 'pos/confirm_activate.html', {"po": po})
