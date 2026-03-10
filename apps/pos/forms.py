@@ -20,34 +20,23 @@ class IssuePurchaseOrderForm(forms.ModelForm):
         model = PurchaseOrder
         fields = ['po_number', 'vendor', 'demand', 'expected_delivery',]
         widgets = {
-            'po_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'po_number': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'true'}),
             'expected_delivery': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
         }
-
-
-class FabricSelect(Select):
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
-        option = super().create_option(name, value, label, selected, index, subindex=subindex, attrs=attrs)
-        if value:  # if fabric
-            pk = getattr(value, "value", value)
-            try:
-                fabric = FabricColor.objects.get(pk=pk)
-                option['attrs']['data-price'] = fabric.price
-            except FabricColor.DoesNotExist:
-                pass
-        return option
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:  # new object
+            next_id = PurchaseOrder.objects.count() + 1
+            self.fields['po_number'].initial = f"PO Fab#{next_id}"
     
 
 class AssignPurchaseOrderFabricsForm(forms.ModelForm):
-    fabric = forms.ModelChoiceField(
-        queryset=FabricColor.objects.filter(is_active=True),
-        widget=FabricSelect(attrs={'class': 'form-select select_fabric', })
-    )
-
     class Meta:
         model = PurchaseOrderFabrics
         fields = ['fabric', 'yards']
         widgets = {
-            'yards': forms.NumberInput(attrs={'class': 'form-control', })
+            'yards': forms.NumberInput(attrs={'class': 'form-control', }),
+            'fabric': forms.Select(attrs={'class': 'form-select select_fabric', })
         }
 
