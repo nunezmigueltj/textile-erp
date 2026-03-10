@@ -4,11 +4,14 @@ from django.urls import reverse_lazy
 from .forms import IssuePurchaseOrderForm, AssignPurchaseOrderFabricsForm
 from .models import PurchaseOrder, PurchaseOrderFabrics
 from apps.fabrics.models import FabricColor
+from apps.demand.models import Demand
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.http import JsonResponse
+
 
 # Create your views here.
 @never_cache
@@ -140,3 +143,10 @@ def activate_po(request, po_id):
         po.save()
         return redirect("pos:pos_list")
     return render(request, 'pos/confirm_activate.html', {"po": po})
+
+
+def get_fabrics_for_demand(request, demand_id):
+    demand = Demand.objects.get(pk=demand_id)
+    fabrics = demand.style.fabrics.all()
+    data = [{"id": f.id, "name": str(f), "price": f.price} for f in fabrics]
+    return JsonResponse(data, safe=False)

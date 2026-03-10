@@ -67,7 +67,8 @@
                             <div class="text-danger">{{ fabric_form.yards.errors }}</div>
                             {% endif %}
                         </td>
-                        <td class="prices"><input type="number" step="0.01" name="prices" class="form-control" readonly></td>
+                        <td class="prices"><input type="number" step="0.01" name="prices" class="form-control" readonly>
+                        </td>
                         <td><button type="button" class="btn btn-danger remove-row">X</button></td>
                     </tr>
                 </tbody>
@@ -79,6 +80,16 @@
 </div>
 
 <script>
+    window.addEventListener("load", function () {
+        const fabricSelect = document.getElementById("id_fabric");
+        fabricSelect.innerHTML = "";
+        // Add dashed placeholder option
+        const placeholderOption = document.createElement("option");
+        placeholderOption.value = "";
+        placeholderOption.textContent = "---------";
+        fabricSelect.appendChild(placeholderOption);
+    });
+
     document.getElementById("add-row").addEventListener("click", function () {
         let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
         let newRow = table.rows[0].cloneNode(true);
@@ -92,7 +103,7 @@
         if (e.target.classList.contains("remove-row")) {
             let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
             let rows_count = table.rows.length;
-            if(rows_count == 1){
+            if (rows_count == 1) {
                 return;
             }
             let row = e.target.closest("tr");
@@ -112,4 +123,40 @@
             input.value = price;
         }
     })
+
+    document.getElementById("id_demand").addEventListener("change", function () {
+        const demandId = this.value;
+        console.log(demandId)
+        const fabricsSelect = document.getElementById("id_fabric");
+        if(demandId == ''){
+            fabricsSelect.innerHTML = "";
+            // Add dashed placeholder option
+            const placeholderOption = document.createElement("option");
+            placeholderOption.value = "";
+            placeholderOption.textContent = "---------";
+            fabricsSelect.appendChild(placeholderOption);
+            return;
+        }
+        fetch(`/pos/get-fabrics/${demandId}/`)
+            .then(response => response.json())
+            .then(data => {
+                fabricsSelect.innerHTML = "";
+                // Add dashed placeholder option
+                const placeholderOption = document.createElement("option");
+                placeholderOption.value = "";
+                placeholderOption.textContent = "---------";
+                fabricsSelect.appendChild(placeholderOption);
+
+                // Add fabrics with data-price attribute
+                data.forEach(fabric => {
+                    const option = document.createElement("option");
+                    option.value = fabric.id;
+                    option.textContent = fabric.name;
+                    option.setAttribute("data-price", fabric.price);  // attach price
+                    fabricsSelect.appendChild(option);
+                });
+
+            });
+    });
+
 </script>
