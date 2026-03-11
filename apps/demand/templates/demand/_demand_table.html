@@ -21,6 +21,8 @@
         <td>{{ demand.style }}</td>
         <td>{{ demand.total_pieces }}</td>
         <td class="text-end">
+          <a href="{% url 'demand:issue_po' demand.id %}"
+              class="btn btn-sm btn-warning">Issue PO</a>
           <a href="{% url 'demand:edit_demand' demand.id %}"
               class="btn btn-sm btn-edit">Edit</a>
           <a href="{% url 'demand:deactivate_demand' demand.id %}"

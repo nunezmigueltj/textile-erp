@@ -1,14 +1,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView
 from .forms import AddDemandForm
 from .models import Demand
-from apps.companies.models import Company, Customer
-from apps.garments.models import GarmentStyle
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.core.paginator import Paginator
 from django.db.models import Q
+from apps.pos.forms import IssuePurchaseOrderForm, AssignPurchaseOrderFabricsForm
+from django.db import transaction
+from apps.pos.models import PurchaseOrderFabrics
+from apps.fabrics.models import FabricColor
 
 # Create your views here.
 @never_cache
@@ -77,3 +80,53 @@ def deactivate_demand(request, demand_id):
         demand.save()
         return redirect("demand:demand_list")
     return render(request, 'demand/confirm_deactivate.html', {"demand":demand})
+
+
+def issue_po(request, demand_id):
+    demand = Demand.objects.get(id=demand_id)
+    # style = demand.style
+    fabrics = demand.style.fabrics.all()
+    vendors = list({fabric.fabric.vendor for fabric in fabrics}) #unique, set
+    po_form = IssuePurchaseOrderForm(request.POST or None)
+    fabric_form = AssignPurchaseOrderFabricsForm(request.POST or None)
+
+    if request.method == "POST":
+        print(f"request.POST:::{request.POST}")
+        if po_form.is_valid():
+            print("is valid")
+            fabrics = request.POST.getlist("fabric")
+            yards = request.POST.getlist("yards")
+
+            with transaction.atomic():
+                po = po_form.save(commit=False)
+                po.save()
+
+                po_fabrics = []
+                for index,fabric in enumerate(fabrics):
+                    po_fabrics.append(PurchaseOrderFabrics(
+                        purchase_order=po,
+                        fabric=get_object_or_404(FabricColor, id=fabric),
+                        yards=yards[index]
+                    ))
+                #bulk create
+                PurchaseOrderFabrics.objects.bulk_create(po_fabrics)
+                demand.is_active = False
+                demand.save()
+                return redirect("demand:demand_list")
+                
+    return render(request, 'demand/issue_po.html', {
+        "demand": demand,
+        # "style":style, 
+        # "fabrics":fabrics, 
+        "form": po_form, 
+        "fabric_form": fabric_form,
+        "vendors": vendors
+    })
+    
+
+def get_fabrics_for_demand_vendor(request, demand_id, vendor_id):
+    demand = Demand.objects.get(pk=demand_id)
+    fabrics = demand.style.fabrics.filter(fabric__vendor_id=vendor_id)
+    
+    data = [{"id": f.id, "name": str(f), "price": f.price, "vendor": f.fabric.vendor.company.name} for f in fabrics]
+    return JsonResponse(data, safe=False)
