@@ -22,6 +22,8 @@ urlpatterns = [
     path('', views.demand_list, name='demand_list'),
     path('add/', views.AddDemand.as_view(), name='add_demand'),
     path('edit/<int:pk>', views.EditDemand.as_view(), name='edit_demand'),
-    path('activate/<int:demand_id>', views.activate_demand, name='activate_demand'),
-    path('deactivate/<int:demand_id>', views.deactivate_demand, name='deactivate_demand'),
+    path('activate/<int:demand_id>/', views.activate_demand, name='activate_demand'),
+    path('deactivate/<int:demand_id>/', views.deactivate_demand, name='deactivate_demand'),
+    path('<int:demand_id>/issuePO/', views.issue_po, name='issue_po'),
+    path('get-fabrics/<int:demand_id>/<int:vendor_id>/', views.get_fabrics_for_demand_vendor, name="get_fabrics_for_demand_vendor"),
 ]
