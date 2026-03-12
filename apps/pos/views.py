@@ -80,6 +80,11 @@ def issue_po(request):
                     ))
                 #bulk create
                 PurchaseOrderFabrics.objects.bulk_create(po_fabrics)
+
+                demand = Demand.objects.get(id=request.POST.get("demand"))
+                demand.is_active = False
+                demand.save()
+
                 return redirect("pos:pos_list")
                 
     return render(request, "pos/issue_po.html", {
@@ -145,8 +150,23 @@ def activate_po(request, po_id):
     return render(request, 'pos/confirm_activate.html', {"po": po})
 
 
-def get_fabrics_for_demand(request, demand_id):
+def get_vendors_for_demand(request, demand_id):
     demand = Demand.objects.get(pk=demand_id)
     fabrics = demand.style.fabrics.all()
-    data = [{"id": f.id, "name": str(f), "price": f.price} for f in fabrics]
+    # vendors = list({fabric.fabric.vendor for fabric in fabrics}) #unique, set
+    data = [{
+            "id": f.id, 
+            "name": str(f), 
+            "price": f.price, 
+            "vendor_name": f.fabric.vendor.company.name, 
+            "vendor_id": f.fabric.vendor.company.id
+        } for f in fabrics]
+    return JsonResponse(data, safe=False)
+
+
+def get_fabrics_for_demand_vendor(request, demand_id, vendor_id):
+    demand = Demand.objects.get(pk=demand_id)
+    fabrics = demand.style.fabrics.filter(fabric__vendor_id=vendor_id)
+    
+    data = [{"id": f.id, "name": str(f), "price": f.price, "vendor": f.fabric.vendor.company.name} for f in fabrics]
     return JsonResponse(data, safe=False)
