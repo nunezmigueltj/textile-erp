@@ -25,18 +25,22 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            {{ po_form.vendor.label_tag }}
-                            {{ po_form.vendor }}
-                            {% if po_form.vendor.errors %}
-                            <div class="text-danger">{{ po_form.vendor.errors }}</div>
+                            {{ po_form.demand.label_tag }}
+                            <select name="demand" class="form-control" required="true" id="id_demand" readonly="true">
+                                <option value="{{ po.demand.id }}" selected>{{ po.demand }}</option>
+                            </select>
+                            {% if po_form.demand.errors %}
+                            <div class="text-danger">{{ po_form.demand.errors }}</div>
                             {% endif %}
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            {{ po_form.demand.label_tag }}
-                            {{ po_form.demand }}
-                            {% if po_form.demand.errors %}
-                            <div class="text-danger">{{ po_form.demand.errors }}</div>
+                            {{ po_form.vendor.label_tag }}
+                            <select name="vendor" class="form-control" required="true" id="id_vendor">
+                                <option value="" selected>---------</option>
+                            </select>
+                            {% if po_form.vendor.errors %}
+                            <div class="text-danger">{{ po_form.vendor.errors }}</div>
                             {% endif %}
                         </div>
 
@@ -104,89 +108,204 @@
 </div>
 
 <script>
-    function loadFabrics(demandId, selectedFabrics) {
-        fetch(`/pos/get-fabrics/${demandId}/`)
-            .then(response => response.json())
-            .then(data => {
-                for (let i = 0; i < selectedFabrics.length; i++) {
-                    let select_element = selectedFabrics[i];
-                    let selected_fabric_id = select_element.value;
-                    select_element.innerHTML = "";
+    const tableFabrics = document.querySelector("#fabric-table tbody");
+    const fabricsSelect = document.getElementById("id_fabric");
+    const poId = {{ po.id }};
 
-                    // Add dashed placeholder
-                    const placeholderOption = document.createElement("option");
-                    placeholderOption.value = "";
-                    placeholderOption.textContent = "--------";
-                    select_element.appendChild(placeholderOption);
-
-                    // Add fabrics with data-price
-                    data.forEach(fabric => {
-                        const option = document.createElement("option");
-                        option.value = fabric.id;
-                        option.textContent = fabric.name;
-                        option.dataset.price = fabric.price;
-
-                        // Pre-select if editing
-                        if (selected_fabric_id && fabric.id == selected_fabric_id) {
-                            option.selected = true;
-                        }
-
-                        select_element.appendChild(option);
-                    });
-
-                    // Trigger price update if a fabric is selected
-                    let selected = select_element.options[select_element.selectedIndex];
-                    let price = selected.dataset.price;
-                    
-                    if (selected && selected.dataset.price) {
-                        const row = select_element.closest("tr");
-                        const priceCell = row.querySelector("td.prices");
-                        const input = priceCell.querySelector("input");
-
-                        input.value = price;
-                    }
-                }
-            });
-    }
-
-    // Run when demand changes
-    document.getElementById("id_demand").addEventListener("change", function () {
-        const tbody = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
-
-        while (tbody.rows.length > 1) {
-            tbody.deleteRow(1);
+    // Helper: clean table, let first row
+    const resetTable = () => {
+        while (tableFabrics.rows.length > 1) {
+            tableFabrics.deleteRow(1);
         }
+    };
 
-        const fabricSelects = document.getElementsByName("fabric");
-        document.querySelector('input[name="yards"]').value = "";
-        document.querySelector('input[name="prices"]').value = "";
-
-        loadFabrics(this.value, fabricSelects);
-    });
+    // Helper: first empty row, placeholder
+    const createPlaceholder = () => {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "---------";
+        return option;
+    };
 
     // Run once on page load (edit view)
     window.addEventListener("load", function () {
         const demandSelect = document.getElementById("id_demand");
+        const vendorSelect = document.getElementById("id_vendor");
         const fabricSelects = document.getElementsByName("fabric")
 
         if (demandSelect && demandSelect.value) {
-            loadFabrics(demandSelect.value, fabricSelects);
+            loadFabrics(demandSelect.value, fabricSelects, vendorSelect);
+        }
+    });
+
+    async function loadFabrics(demandId, selectedFabrics, vendorSelect) {
+        try{
+            const response = await fetch(`/pos/get-vendors/${demandId}/${poId}/`);
+            const data = await response.json();
+
+            // Unique vendors by vendor_id
+            let unique_vendors = [
+                ...new Map(data.fabrics.map(item => [
+                    item.vendor_id, { 
+                        id: item.vendor_id, name: item.vendor_name 
+                    }
+                ])).values()
+            ];
+
+            while (vendorSelect.options.length > 1) {
+                vendorSelect.remove(vendorSelect.options.length - 1);
+            }
+
+            // Add vendor options
+            unique_vendors.forEach(vendor => {
+                const option = document.createElement("option");
+                option.value = vendor.id;
+                option.textContent = vendor.name;
+                vendorSelect.appendChild(option);
+            });
+
+            // Pre-select vendor if editing
+            if (data.selected_vendor) {
+                vendorSelect.value = data.selected_vendor.id;
+            }
+        }
+        catch (error) {
+            console.error("Error fetching fabrics:", error);
+        }
+
+        try{
+            const demandId = document.getElementById("id_demand").value;
+            const vendorId = vendorSelect.value;
+
+            resetTable();
+
+            if (!vendorId) {
+                fabricsSelect.innerHTML = "";
+                fabricsSelect.appendChild(createPlaceholder());
+
+                document.querySelector("input[name='yards']").value = "";
+                document.querySelector("input[name='prices']").value = "";
+                return;
+            }
+            const response = await fetch(`/pos/get-fabrics/${demandId}/${vendorId}/`);
+            const data = await response.json();
+
+            for (let i = 0; i < selectedFabrics.length; i++) {
+                let select_element = selectedFabrics[i];
+                let selected_fabric_id = select_element.value;
+                select_element.innerHTML = "";
+
+                // Add dashed placeholder
+                const placeholderOption = document.createElement("option");
+                placeholderOption.value = "";
+                placeholderOption.textContent = "--------";
+                select_element.appendChild(placeholderOption);
+
+                // Add fabrics with data-price
+                data.forEach(fabric => {
+                    const option = document.createElement("option");
+                    option.value = fabric.id;
+                    option.textContent = fabric.name;
+                    option.dataset.price = fabric.price;
+
+                    // Pre-select if editing
+                    if (selected_fabric_id && fabric.id == selected_fabric_id) {
+                        option.selected = true;
+                    }
+
+                    select_element.appendChild(option);
+                });
+
+                // Trigger price update if a fabric is selected
+                let selected = select_element.options[select_element.selectedIndex];
+                let price = selected.dataset.price;
+
+                if (selected && selected.dataset.price) {
+                    const row = select_element.closest("tr");
+                    const priceCell = row.querySelector("td.prices");
+                    const input = priceCell.querySelector("input");
+
+                    input.value = price;
+                }
+            }
+        }
+        catch (error) {
+            console.error("Error fetching fabrics:", error);
+        }
+    }
+
+
+    document.getElementById("id_demand").addEventListener("change", async function () {
+        const demandId = this.value;
+        const vendorSelect = document.getElementById("id_vendor");
+
+        // Helper: clean table, let first row
+        const resetSelectVendor = () => {
+            while (vendorSelect.options.length > 1) {
+                vendorSelect.remove(vendorSelect.options.length - 1);
+            }
+        };
+
+        resetTable();
+
+        fabricsSelect.innerHTML = "";
+        fabricsSelect.appendChild(createPlaceholder());
+
+        document.querySelector("input[name='yards']").value = "";
+        document.querySelector("input[name='prices']").value = "";
+
+        resetSelectVendor();
+
+        if (!demandId) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/pos/get-vendors/${demandId}/${poId}/`);
+            const data = await response.json();
+
+            fabricsSelect.innerHTML = "";
+            fabricsSelect.appendChild(createPlaceholder());
+
+            // Unique vendors by vendor_id
+            let unique_vendors = [
+                ...new Map(data.fabrics.map(item => [
+                    item.vendor_id, { 
+                        id: item.vendor_id, name: item.vendor_name 
+                    }
+                ])).values()
+            ];
+
+            resetSelectVendor();
+            
+            // Add vendor options
+            unique_vendors.forEach(vendor => {
+                const option = document.createElement("option");
+                option.value = vendor.id;
+                option.textContent = vendor.name;
+                vendorSelect.appendChild(option);
+            });
+        }
+        catch (error) {
+            console.error("Error fetching vendors:", error);
         }
     });
 
     document.getElementById("add-row").addEventListener("click", function () {
-        let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
-        let newRow = table.rows[0].cloneNode(true);
+        let newRow = tableFabrics.rows[0].cloneNode(true);
         // clean input & select
         newRow.querySelectorAll("input").forEach(input => input.value = "");
-        newRow.querySelectorAll("select").forEach(select => select.value = "");
-        table.appendChild(newRow);
+        newRow.querySelectorAll("select").forEach(select => {
+            select.value = "";
+            // Remove id to avoid duplicates
+            select.removeAttribute("id");
+        });
+        tableFabrics.appendChild(newRow);
     });
 
     document.addEventListener("click", function (e) {
         if (e.target.classList.contains("remove-row")) {
-            let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
-            let rows_count = table.rows.length;
+            let rows_count = tableFabrics.rows.length;
             if (rows_count == 1) {
                 return;
             }
@@ -205,7 +324,51 @@
             const price = selected.dataset.price;
 
             input.value = price;
+
+            if(e.target.value == "") {
+                row.querySelector("input[name='yards']").value = "";
+            }
         }
     })
+
+    
+    document.getElementById("id_vendor").addEventListener("change", async function () {
+        const demandId = document.getElementById("id_demand").value;
+        const vendorId = this.value;
+
+        resetTable();
+        
+        // Update all fabric selects
+        document.querySelectorAll(".select_fabric").forEach(select => {
+            select.innerHTML = "";
+            select.appendChild(createPlaceholder());
+        });
+
+        document.querySelectorAll("input[name='yards']").forEach(input => input.value = "");
+        document.querySelectorAll("input[name='prices']").forEach(input => input.value = "");
+
+        if (!vendorId) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/pos/get-fabrics/${demandId}/${vendorId}/`);
+            const data = await response.json();
+
+            // Update all fabric selects
+            document.querySelectorAll(".select_fabric").forEach(select => {
+                // Add select options
+                data.forEach(fabric => {
+                    const option = document.createElement("option");
+                    option.value = fabric.id;
+                    option.textContent = fabric.name;
+                    option.dataset.price = fabric.price;
+                    select.appendChild(option);
+                });
+            });
+        } catch (error) {
+            console.error("Error fetching fabrics:", error);
+        }
+    });
 </script>
 {% endblock %}

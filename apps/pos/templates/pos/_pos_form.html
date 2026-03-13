@@ -100,7 +100,7 @@
         return option;
     };
 
-    window.addEventListener("load", function () {
+    window.addEventListener("load", function () { 
         const fabricSelect = document.getElementById("id_fabric");
         fabricSelect.innerHTML = "";
         // Add dashed placeholder option
@@ -110,9 +110,13 @@
     document.getElementById("add-row").addEventListener("click", function () {
         let table = document.getElementById("fabric-table").getElementsByTagName("tbody")[0];
         let newRow = table.rows[0].cloneNode(true);
-        // clean input & select
+        // Clean input & select
         newRow.querySelectorAll("input").forEach(input => input.value = "");
-        newRow.querySelectorAll("select").forEach(select => select.value = "");
+        newRow.querySelectorAll("select").forEach(select => {
+            select.value = "";
+            // Remove id to avoid duplicates
+            select.removeAttribute("id");
+        });
         table.appendChild(newRow);
     });
 
@@ -138,6 +142,10 @@
             const price = selected.dataset.price;
 
             input.value = price;
+
+            if(e.target.value == "") {
+                row.querySelector("input[name='yards']").value = "";
+            }
         }
     })
 
@@ -154,15 +162,15 @@
 
         resetTable();
 
+        fabricsSelect.innerHTML = "";
+        fabricsSelect.appendChild(createPlaceholder());
+
+        document.querySelector("input[name='yards']").value = "";
+        document.querySelector("input[name='prices']").value = "";
+
+        resetSelectVendor();
+
         if (!demandId) {
-            fabricsSelect.innerHTML = "";
-            fabricsSelect.appendChild(createPlaceholder());
-
-            document.querySelector("input[name='yards']").value = "";
-            document.querySelector("input[name='prices']").value = "";
-
-            resetSelectVendor();
-
             return;
         }
 
@@ -170,18 +178,20 @@
             const response = await fetch(`/pos/get-vendors/${demandId}/`);
             const data = await response.json();
 
-            fabricsSelect.innerHTML = "";
-            fabricsSelect.appendChild(createPlaceholder());
+            // Update all fabric selects
+            document.querySelectorAll(".select_fabric").forEach(select => {
+                select.innerHTML = "";
+                select.appendChild(createPlaceholder());
+            });
 
             // Unique vendors by vendor_id
             let unique_vendors = [
-                ...new Map(data.map(item => [
+                ...new Map(data.fabrics.map(item => [
                     item.vendor_id, { 
                         id: item.vendor_id, name: item.vendor_name 
                     }
                 ])).values()
             ];
-            console.log(unique_vendors);
 
             resetSelectVendor();
             
@@ -204,12 +214,13 @@
 
         resetTable();
 
-        if (!vendorId) {
-            fabricsSelect.innerHTML = "";
-            fabricsSelect.appendChild(createPlaceholder());
+        fabricsSelect.innerHTML = "";
+        fabricsSelect.appendChild(createPlaceholder());
 
-            document.querySelector("input[name='yards']").value = "";
-            document.querySelector("input[name='prices']").value = "";
+        document.querySelector("input[name='yards']").value = "";
+        document.querySelector("input[name='prices']").value = "";
+
+        if (!vendorId) {    
             return;
         }
 
@@ -217,16 +228,18 @@
             const response = await fetch(`/pos/get-fabrics/${demandId}/${vendorId}/`);
             const data = await response.json();
 
-            fabricsSelect.innerHTML = "";
-            fabricsSelect.appendChild(createPlaceholder());
-
-            // Add select options
-            data.forEach(fabric => {
-                const option = document.createElement("option");
-                option.value = fabric.id;
-                option.textContent = fabric.name;
-                option.dataset.price = fabric.price;
-                fabricsSelect.appendChild(option);
+            // Update all fabric selects
+            document.querySelectorAll(".select_fabric").forEach(select => {
+                select.innerHTML = "";
+                select.appendChild(createPlaceholder());
+                // Add select options
+                data.forEach(fabric => {
+                    const option = document.createElement("option");
+                    option.value = fabric.id;
+                    option.textContent = fabric.name;
+                    option.dataset.price = fabric.price;
+                    select.appendChild(option);
+                });
             });
         } catch (error) {
             console.error("Error fetching fabrics:", error);
