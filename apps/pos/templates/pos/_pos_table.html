@@ -3,6 +3,7 @@
     <thead>
       <tr>
         <th scope="col">PO #</th>
+        <th scope="col">Demand #</th>
         <th scope="col">Ordered Date</th>
         <th scope="col">Expected Delivery</th>
         <th scope="col">Fabrics</th>
@@ -15,12 +16,13 @@
       {% for pos in page_obj %}
       <tr>
         <td>{{ pos.po_number }}</td>
+        <td>{{ pos.demand }}</td>
         <td>{{ pos.order_date }}</td>
         <td>{{ pos.expected_delivery }}</td>
         <td>
           {% if pos.fabrics.all %}
             {% for fabriccolor in pos.fabrics.all %}
-              <p>{{ fabriccolor.fabric }}</p>
+              <p>{{ fabriccolor.fabric }} - {{ fabriccolor.fabric.fabric.vendor.company.name }}</p>
             {% endfor %}
           {% else %}
             <p>No fabrics assigned.</p>

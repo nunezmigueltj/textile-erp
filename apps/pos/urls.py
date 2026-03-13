@@ -25,5 +25,6 @@ urlpatterns = [
     path('reopen/<int:po_id>/', views.activate_po, name="activate_po"),
     path('close/<int:po_id>/', views.deactivate_po, name="deactivate_po"),
     path('get-vendors/<int:demand_id>/', views.get_vendors_for_demand, name="get_vendors_for_demand"),
+    path('get-vendors/<int:demand_id>/<int:po_id>/', views.get_vendors_for_demand, name="get_vendors_for_demand"),
     path('get-fabrics/<int:demand_id>/<int:vendor_id>/', views.get_fabrics_for_demand_vendor, name="get_fabrics_for_demand_vendor"),
 ]

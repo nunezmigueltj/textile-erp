@@ -96,9 +96,10 @@ def issue_po(request):
 def edit_po(request, po_id):
     po = get_object_or_404(PurchaseOrder, id=po_id)
     po_fabrics = PurchaseOrderFabrics.objects.filter(purchase_order=po)
+    print(f"PO Fabrics: {po_fabrics}")
 
     po_form = IssuePurchaseOrderForm(request.POST or None, instance=po)
-    fabric_forms = [AssignPurchaseOrderFabricsForm(instance=fabric) for fabric in po_fabrics]
+    fabric_forms = [AssignPurchaseOrderFabricsForm(request.POST or None, instance=fabric) for fabric in po_fabrics]
 
     if request.method == "POST":
         if po_form.is_valid():
@@ -126,7 +127,12 @@ def edit_po(request, po_id):
                 po_fabrics.exclude(id__in=updated_fabrics_ids).delete()
                 return redirect("pos:pos_list")
 
-    return render(request, "pos/edit_po.html", {"po_form": po_form, "fabric_forms": fabric_forms})
+    print(fabric_forms)
+    return render(request, "pos/edit_po.html", {
+        "po_form": po_form, 
+        "fabric_forms": fabric_forms,
+        "po": po
+        })
 
 
 
@@ -150,23 +156,35 @@ def activate_po(request, po_id):
     return render(request, 'pos/confirm_activate.html', {"po": po})
 
 
-def get_vendors_for_demand(request, demand_id):
+def get_vendors_for_demand(request, demand_id, po_id=None):
     demand = Demand.objects.get(pk=demand_id)
     fabrics = demand.style.fabrics.all()
-    # vendors = list({fabric.fabric.vendor for fabric in fabrics}) #unique, set
-    data = [{
-            "id": f.id, 
-            "name": str(f), 
-            "price": f.price, 
-            "vendor_name": f.fabric.vendor.company.name, 
-            "vendor_id": f.fabric.vendor.company.id
-        } for f in fabrics]
+    selected_vendor = None
+    if po_id:
+        po = get_object_or_404(PurchaseOrder, id=po_id)
+        selected_vendor = {
+            "id": po.vendor_id,
+            "name": po.vendor.company.name
+        }
+    data = {
+        "fabrics": [
+            {
+                "id": f.id, 
+                "name": str(f), 
+                "price": f.price, 
+                "vendor_name": f.fabric.vendor.company.name, 
+                "vendor_id": f.fabric.vendor.id
+        } for f in fabrics],
+        "selected_vendor": selected_vendor
+    }
     return JsonResponse(data, safe=False)
 
 
 def get_fabrics_for_demand_vendor(request, demand_id, vendor_id):
     demand = Demand.objects.get(pk=demand_id)
-    fabrics = demand.style.fabrics.filter(fabric__vendor_id=vendor_id)
-    
+    # print(f"Demand Style: {demand}")
+    # print(f"Vendor ID: {vendor_id}")
+    # print(f"All fabrics for demand: {demand.style.fabrics.all()}")
+    fabrics = demand.style.fabrics.filter(fabric__vendor__id=vendor_id)    
     data = [{"id": f.id, "name": str(f), "price": f.price, "vendor": f.fabric.vendor.company.name} for f in fabrics]
     return JsonResponse(data, safe=False)
