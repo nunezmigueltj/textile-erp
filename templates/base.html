@@ -72,7 +72,7 @@
           <a href="{% url 'pos:pos_list' %}" class="list-group-item list-group-item-action {% if '/pos/' in request.path %}active{% endif %}">
             <i class="bi bi-file-earmark-text me-2"></i> Purchase Orders
           </a>
-          <a href="#" class="list-group-item list-group-item-action">
+          <a href="{% url 'inventory:inventory_list' %}" class="list-group-item list-group-item-action {% if '/inventory/' in request.path %}active{% endif %}">
             <i class="bi bi-box-seam me-2"></i> Inventory
           </a>
           {% if request.user.is_superuser %}

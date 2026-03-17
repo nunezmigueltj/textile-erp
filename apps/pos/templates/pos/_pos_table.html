@@ -39,6 +39,8 @@
         </td>
         <td><span class="badge rounded-pill bg-warning text-dark p-2">{{ pos.status }}</span></td>
         <td class="text-end">
+          <a href="{% url 'inventory:create_receipt_from_po' pos.id %}"
+              class="btn btn-sm btn-success">Receive</a>
           <a href="{% url 'pos:edit_po' pos.id %}"
               class="btn btn-sm btn-edit">Edit</a>
           {% if request.user.is_superuser %}

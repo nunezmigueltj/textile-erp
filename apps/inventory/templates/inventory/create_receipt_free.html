@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Recepción Libre{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <h4 class="mb-3">Fabric Stock Receiver</h4>
+
+                <!-- General Information -->
+                <div class="text-danger">
+                    {{ receipt_form.non_field_errors }}
+                    {{ line_formset.non_field_errors }}
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="section-header">Details</h6>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ receipt_form.receipt_number.label_tag }}
+                            {{ receipt_form.receipt_number }}
+                            {% if receipt_form.receipt_number.errors %}
+                            <div class="text-danger">{{ receipt_form.receipt_number.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            {{ receipt_form.received_date.label_tag }}
+                            {{ receipt_form.received_date }}
+                            {% if receipt_form.received_date.errors %}
+                            <div class="text-danger">{{ receipt_form.received_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            {{ receipt_form.notes.label_tag }}
+                            {{ receipt_form.notes }}
+                            {% if receipt_form.notes.errors %}
+                            <div class="text-danger">{{ receipt_form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <h6 class="section-header">Received Fabrics</h6>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ line_formset.management_form }}
+                            <table class="table table-bordered" id="fabric-table">
+                                <thead>
+                                    <tr>
+                                        <th>Fabric</th>
+                                        <th>Received Yards</th>
+                                        <th style="width: 10%;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for form in line_formset %}
+                                    <tr>
+                                        <td>
+                                            <select name="form-{{ forloop.counter0 }}-fabric" class="form-control" id="id_form-{{ forloop.counter0 }}-fabric" required>
+                                                <option value="" selected>---------</option>
+                                                {% for fabric in fabrics %}
+                                                <option value="{{ fabric.id }}">{{ fabric }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            {% if form.fabric.errors %}
+                                            <div class="text-danger">{{ form.fabric.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ form.received_yards }}
+                                            {% if form.received_yards.errors %}
+                                            <div class="text-danger">{{ form.received_yards.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td hidden>
+                                            {{ form.tolerance_percent }}
+                                            {% if form.tolerance_percent.errors %}
+                                            <div class="text-danger">{{ form.tolerance_percent.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger remove-row">X</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-outline-success w-100" id="add-row">+ Add Fabric</button>
+                            <br><br>
+                            {% if line_formset.errors %}
+                                <div class="text-danger">{{ line_formset.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success">Save Receiver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tableBody = document.querySelector("#fabric-table tbody");
+    const addRowBtn = document.getElementById("add-row");
+    const managementForm = document.querySelector("[name='form-TOTAL_FORMS']");
+
+    let formCount = parseInt(managementForm.value);
+
+    // Function to update form count
+    const updateFormCount = () => {
+        managementForm.value = formCount;
+    };
+
+    // Function to create a new row
+    const createRow = (index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>
+                <select name="form-${index}-fabric" class="form-control" id="id_form-${index}-fabric" required>
+                    <option value="" selected>---------</option>
+                    {% for fabric in fabrics %}
+                    <option value="{{ fabric.id }}">{{ fabric }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="number" name="form-${index}-received_yards" step="0.01" class="form-control" id="id_form-${index}-received_yards">
+            </td>
+            <td hidden>
+                <input type="number" name="form-${index}-tolerance_percent" step="0.01" class="form-control" id="id_form-${index}-tolerance_percent" value="5">
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger remove-row">X</button>
+            </td>
+        `;
+        return row;
+    };
+
+    // Add row event
+    addRowBtn.addEventListener("click", () => {
+        const newRow = createRow(formCount);
+        tableBody.appendChild(newRow);
+        formCount++;
+        updateFormCount();
+    });
+
+    // Remove row event (delegate)
+    tableBody.addEventListener("click", (e) => {
+        if (e.target.classList.contains("remove-row")) {
+            e.target.closest("tr").remove();
+            formCount--;
+            updateFormCount();
+        }
+    });
+</script>
+{% endblock %}
