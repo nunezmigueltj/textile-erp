@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Stock Fabric Receiver{% endblock %}
+{% block title %}Edit Fabric Receiver{% endblock %}
 
 {% block content %}
 <div class="mt-5">
@@ -9,15 +9,14 @@
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}
-                <h4 class="mb-3">Stock Fabric Receiver</h4>
+                <h4 class="mb-3">Edit Fabric Receiver</h4>
 
-                <!-- General errors -->
+                <!-- General Information -->
                 <div class="text-danger">
                     {{ receipt_form.non_field_errors }}
                     {{ line_formset.non_field_errors }}
                 </div>
 
-                <!-- General information -->
                 <div class="mb-4">
                     <h6 class="section-header">Details</h6>
                     <div class="row">
@@ -47,103 +46,68 @@
                     </div>
                 </div>
 
-                <!-- Received Fabrics -->
                 <div class="mb-5">
                     <h6 class="section-header">Received Fabrics</h6>
                     <div class="row">
                         <div class="col-md-12">
                             {{ line_formset.management_form }}
-                            <table class="table table-bordered align-middle" id="fabric-table">
-                                <thead class="table-light">
+                            <table class="table table-bordered" id="fabric-table">
+                                <thead>
                                     <tr>
                                         <th>Fabric</th>
+                                        <th>Expected Yards</th>
                                         <th>Received Yards</th>
-                                        <th>Actions</th>
+                                        <th hidden>Tolerance (%)</th>
+                                        <th hidden>Remove</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for form in line_formset %}
                                     <tr>
                                         {% for hidden in form.hidden_fields %}
-                                        {{ hidden }}
-                                        {% endfor %}
+                                                {{ hidden }}
+                                            {% endfor %}
                                         <td>
                                             {{ form.fabric }}
                                             {% if form.fabric.errors %}
                                             <div class="text-danger">{{ form.fabric.errors }}</div>
                                             {% endif %}
                                         </td>
+                                        <td>{{ form.instance.expected_yards|default:"N/A" }}</td>
                                         <td>
                                             {{ form.received_yards }}
                                             {% if form.received_yards.errors %}
                                             <div class="text-danger">{{ form.received_yards.errors }}</div>
                                             {% endif %}
                                         </td>
-                                        <td>
-                                            {{ form.DELETE.as_hidden }}
-                                            <button type="button" class="btn btn-danger remove-row">X</button>
+                                        <td hidden>
+                                            {{ form.tolerance_percent }}
+                                            {% if form.tolerance_percent.errors %}
+                                            <div class="text-danger">{{ form.tolerance_percent.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td hidden>
+                                            {{ form.DELETE }}
+                                            <label class="form-check-label">Remove</label>
                                         </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
-                            <button type="button" class="btn btn-outline-success w-100" id="add-row">+ Add
-                                Fabric</button>
-                            <br><br>
-
-                            <!-- empty_form /  duplicate -->
-                            <template id="empty-form-row">
-                                <tr>
-                                    <td>{{ line_formset.empty_form.fabric }}</td>
-                                    <td>{{ line_formset.empty_form.received_yards }}</td>
-                                    <td>
-                                        {{ line_formset.empty_form.DELETE.as_hidden }}
-                                        <button type="button" class="btn btn-danger remove-row">X</button>
-                                    </td>
-                                </tr>
-                            </template>
-
                             {% if line_formset.errors %}
-                            <div class="text-danger">{{ line_formset.errors }}</div>
+                                <div class="text-danger">{{ line_formset.errors }}</div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
-                <!-- actions -->
+                <!-- Actions -->
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">Cancel</a>
-                    <div>
-                        <button type="submit" class="btn btn-success">Receive Fabric</button>
-                    </div>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('add-row').addEventListener('click', function () {
-        let formCount = document.querySelectorAll('#fabric-table tbody tr').length;
-        let templateHtml = document.getElementById('empty-form-row').innerHTML.replace(/__prefix__/g, formCount);
-        document.querySelector('#fabric-table tbody').insertAdjacentHTML('beforeend', templateHtml);
-
-        let totalForms = document.getElementById('id_lines-TOTAL_FORMS');
-        if (totalForms) {
-            totalForms.value = formCount + 1;
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-row')) {
-            let row = e.target.closest('tr');
-            let deleteInput = row.querySelector('input[name$="DELETE"]');
-            if (deleteInput) {
-                deleteInput.value = 'on';
-                deleteInput.checked = true;
-            }
-            row.style.display = 'none';
-        }
-    });
-</script>
 {% endblock %}

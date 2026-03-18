@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from apps.pos.models import PurchaseOrder
 from apps.fabrics.models import FabricColor
 from .models import InventoryReceipt, InventoryReceiptLine
-from .forms import InventoryReceiptForm, InventoryReceiptLineFormSet, InventoryReceiptLineForm
+from .forms import InventoryReceiptForm, InventoryReceiptLineForm, InventoryReceiptLineInlineFormSet 
 
 
 def inventory_list(request):
@@ -22,7 +22,8 @@ def inventory_list(request):
         rows_per_page = DEFAULT_ROWS_PER_PAGE
 
 
-    receivers = InventoryReceipt.objects.select_related('purchase_order', 'created_by').order_by('-received_date')
+    receivers = InventoryReceipt.objects.select_related('purchase_order', 'created_by').order_by('-id')
+
 
     if q:
         q=q.strip()
@@ -37,7 +38,7 @@ def inventory_list(request):
                 Q(purchase_order__fabrics__fabric__color__code__icontains=q) |
                 Q(lines__received_yards__icontains=q) | 
                 Q(lines__expected_yards__icontains=q)
-            ).order_by('id').distinct()
+            ).distinct().order_by('-id')
 
         
     paginator = Paginator(receivers, rows_per_page)
@@ -51,111 +52,133 @@ def inventory_list(request):
 def create_receipt_from_po(request, po_id):
     po = get_object_or_404(PurchaseOrder, id=po_id)
 
+    # how many fabrics are in this PO? It will generate that many line forms
+    fabrics_count = po.fabrics.count()
+
+    # extra = fabrics_count means that it will generate as many empty forms as fabrics in the PO
+    LineFormSet = inlineformset_factory(
+        InventoryReceipt,
+        InventoryReceiptLine,
+        form=InventoryReceiptLineForm,
+        extra=fabrics_count,
+        can_delete=True
+    )
+
     if request.method == 'POST':
         receipt_form = InventoryReceiptForm(request.POST)
-        line_formset = InventoryReceiptLineFormSet(request.POST)
+        line_formset = LineFormSet(request.POST, instance=InventoryReceipt(), prefix='lines')
 
         if receipt_form.is_valid() and line_formset.is_valid():
             receipt = receipt_form.save(commit=False)
             receipt.purchase_order = po
-            receipt.created_by = request.user if request.user.is_authenticated else None
             receipt.save()
 
-            # save lines and assign po_fabric if possible
+            lines = line_formset.save(commit=False)
             po_fabrics = list(po.fabrics.all())
-            for i, form in enumerate(line_formset):
-                if form.cleaned_data:
-                    '''
-                        Identificación del problema: 
-                        Los formsets de Django incluyen campos internos como DELETE para manejar la eliminación 
-                        de filas dinámicas. 
-                        Estos campos no deben pasarse al modelo.
-                        En el código original, se estaba intentando crear una instancia de InventoryReceiptLine 
-                        directamente con form.cleaned_data, lo que incluía el campo DELETE. 
-                        Esto causaba un error porque el modelo no tiene un campo DELETE.
-                        La solución aplicada: Antes de crear la instancia del modelo, se hace una copia de cleaned_data 
-                        y se elimina el campo DELETE (si existe):
-                    '''
-                    cleaned_data = form.cleaned_data.copy()
-                    cleaned_data.pop('DELETE', None)
-                    line = InventoryReceiptLine(**cleaned_data)
-                    line.receipt = receipt
-                    if i < len(po_fabrics):
-                        line.po_fabric = po_fabrics[i]
-                    line.save()
+            for i, line in enumerate(lines):
+                line.receipt = receipt
+                if i < len(po_fabrics):
+                    line.po_fabric = po_fabrics[i]
+                line.save()
+            
             po.is_active = False
             po.status = "RECEIVED"
             po.save()
-
+            
             return redirect('inventory:receipt_detail', receipt_id=receipt.id)
-
     else:
-        # GET: pre-fill the receipt form and line formset based on the PO
         receipt_form = InventoryReceiptForm()
 
-        # Create initial data for line formset based on PO fabrics
         initial_lines = []
         for po_fabric in po.fabrics.all():
             initial_lines.append({
                 'fabric': po_fabric.fabric,
                 'expected_yards': po_fabric.yards,
-                'received_yards': po_fabric.yards, 
+                'received_yards': po_fabric.yards,
                 'tolerance_percent': 5,
             })
 
-        line_formset = InventoryReceiptLineFormSet(
+        line_formset = LineFormSet(
+            instance=InventoryReceipt(),
+            queryset=InventoryReceiptLine.objects.none(),
             initial=initial_lines,
+            prefix='lines'
         )
 
-    context = {
+    return render(request, 'inventory/create_receipt.html', {
         'po': po,
         'receipt_form': receipt_form,
         'line_formset': line_formset,
-    }
-
-    return render(request, 'inventory/create_receipt.html', context)
+    })
 
 
 def create_receipt_free(request):
+    LineFormSet = inlineformset_factory(
+        InventoryReceipt,
+        InventoryReceiptLine,
+        form=InventoryReceiptLineForm,
+        fields=['fabric', 'received_yards'],
+        extra=1,
+        can_delete=True
+    )
+
     if request.method == 'POST':
         receipt_form = InventoryReceiptForm(request.POST)
-        line_formset = InventoryReceiptLineFormSet(request.POST)
 
-        if receipt_form.is_valid() and line_formset.is_valid():
-            # save receiver
+        if receipt_form.is_valid():
             receipt = receipt_form.save(commit=False)
             receipt.created_by = request.user if request.user.is_authenticated else None
             receipt.save()
 
-            # save receiver fabrics
-            for form in line_formset:
-                if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
-                    cleaned_data = form.cleaned_data.copy()
-                    cleaned_data.pop('DELETE', None)
-                    line = InventoryReceiptLine(**cleaned_data)
-                    line.receipt = receipt
-                    line.expected_yards = cleaned_data['received_yards']
-                    line.save()
+            # define prefix for the formset to avoid conflicts with other forms on the page
+            line_formset = LineFormSet(request.POST, instance=receipt, prefix='lines')
 
-            return redirect('inventory:receipt_detail', receipt_id=receipt.id)
-        
+            if line_formset.is_valid():
+                lines = line_formset.save(commit=False)
+                for line in lines:
+                    line.expected_yards = line.received_yards
+                    line.save()
+                for line in line_formset.deleted_objects:
+                    line.delete()
+
+                return redirect('inventory:receipt_detail', receipt_id=receipt.id)
     else:
         receipt_form = InventoryReceiptForm()
-        line_formset = formset_factory(
-            InventoryReceiptLineForm,
-            extra = 1  
-        )
+        line_formset = LineFormSet(instance=InventoryReceipt(), prefix='lines')
 
-    context = {
+    return render(request, 'inventory/create_receipt_free.html', {
         'receipt_form': receipt_form,
         'line_formset': line_formset,
-        'fabrics': FabricColor.objects.all(),
-    }
-
-    return render(request, 'inventory/create_receipt_free.html', context)
+    })
 
 
 def receipt_detail(request, receipt_id):
     receipt = get_object_or_404(InventoryReceipt, id=receipt_id)
     context = {'receipt': receipt}
     return render(request, 'inventory/receipt_detail.html', context)
+
+
+def edit_receipt(request, receipt_id):
+    receipt = get_object_or_404(InventoryReceipt, id=receipt_id)
+
+    if request.method == 'POST':
+        receipt_form = InventoryReceiptForm(request.POST, instance=receipt)
+        line_formset = InventoryReceiptLineInlineFormSet(request.POST, instance=receipt)
+
+        if receipt_form.is_valid() and line_formset.is_valid():
+            receipt_form.save()
+            line_formset.save()
+            return redirect('inventory:receipt_detail', receipt_id=receipt.id)
+
+    else:
+        receipt_form = InventoryReceiptForm(instance=receipt)
+        line_formset = InventoryReceiptLineInlineFormSet(instance=receipt)
+
+    context = {
+        'receipt': receipt,
+        'receipt_form': receipt_form,
+        'line_formset': line_formset,
+        'fabrics': FabricColor.objects.all(),
+    }
+
+    return render(request, 'inventory/edit_receipt.html', context)
