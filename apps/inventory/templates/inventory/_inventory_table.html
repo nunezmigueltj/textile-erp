@@ -31,6 +31,9 @@
                 <td class="text-end">
                     <a href="{% url 'inventory:receipt_detail' receipt_id=receiver_row.receipt.id %}"
                         class="btn btn-sm btn-info">View</a>
+                        
+                    <a href="{% url 'inventory:edit_receipt' receipt_id=receiver_row.receipt.id %}"
+                        class="btn btn-sm btn-edit">Edit</a>
                 </td>
             </tr>
             {% endfor %}

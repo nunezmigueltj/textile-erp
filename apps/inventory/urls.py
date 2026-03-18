@@ -24,4 +24,5 @@ urlpatterns = [
     path('receipt/create/free/', views.create_receipt_free, name="create_receipt_free"),
     path('receipt/create/<int:po_id>/', views.create_receipt_from_po, name="create_receipt_from_po"),
     path('receipt/<int:receipt_id>/', views.receipt_detail, name="receipt_detail"),
+    path('receipt/<int:receipt_id>/edit/', views.edit_receipt, name="edit_receipt"),
 ]

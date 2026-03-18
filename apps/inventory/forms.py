@@ -1,8 +1,7 @@
 from django import forms
-from django.forms import formset_factory
 from django.db import connection
-from apps.fabrics.models import FabricColor
 from .models import InventoryReceipt, InventoryReceiptLine
+from django.forms.models import inlineformset_factory
 
 
 class InventoryReceiptForm(forms.ModelForm):
@@ -27,18 +26,22 @@ class InventoryReceiptForm(forms.ModelForm):
 
         self.fields['receipt_number'].initial = f"RF-{next_id}"
 
-            
+
+class InventoryReceiptLineForm(forms.ModelForm):
+    class Meta:
+        model = InventoryReceiptLine
+        fields = ['fabric', 'received_yards', 'tolerance_percent']
+        widgets = {
+            'fabric': forms.Select(attrs={'class': 'form-select'}),
+            'received_yards': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
+            'tolerance_percent': forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}),
+        }
 
 
-class InventoryReceiptLineForm(forms.Form):
-    fabric = forms.ModelChoiceField(queryset=FabricColor.objects.all(), widget=forms.Select(attrs={'class':'form-select'}))
-    received_yards = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'step': '0.01', 'class': 'form-control'}))
-    tolerance_percent = forms.DecimalField(max_digits=5, decimal_places=2, widget=forms.NumberInput(attrs={'step': '0.01'}), initial=5)
-
-
-# Formset para las líneas de recepción
-InventoryReceiptLineFormSet = formset_factory(
-    InventoryReceiptLineForm,
-    extra = 0,  # Sin extra por defecto
+InventoryReceiptLineInlineFormSet = inlineformset_factory(
+    InventoryReceipt,
+    InventoryReceiptLine,
+    form=InventoryReceiptLineForm,
+    extra=0,
     can_delete=True,
 )
