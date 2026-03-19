@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detail Receiver: {{ receipt.receipt_number }}{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+    <h2>Receiver: {{ receipt.receipt_number }}</h2>
+    <p>Date: {{ receipt.received_date|date:"d/m/Y" }}</p>
+    {% if receipt.purchase_order %}
+        <p>PO: <a href="#">{{ receipt.purchase_order.po_number }}</a></p>
+    {% endif %}
+    <p>Notes: {{ receipt.notes|default:"No notes" }}</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Fabric</th>
+                <th>Expected Yards</th>
+                <th>Received Yards</th>
+                <th>% Difference</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in receipt.lines.all %}
+            <tr class="{% if line.status == 'UNDER' %}table-danger{% elif line.status == 'OVER' %}table-warning{% elif line.status == 'OK' %}table-success{% endif %}">
+                <td>{{ line.fabric }}</td>
+                <td>{{ line.expected_yards|default:"N/A" }}</td>
+                <td>{{ line.received_yards }}</td>
+                <td>{{ line.percent_diff|default:"N/A" }}%</td>
+                <td>
+                    <span class="badge {% if line.status == 'UNDER' %}bg-danger{% elif line.status == 'OVER' %}bg-warning{% elif line.status == 'OK' %}bg-success{% else %}bg-secondary{% endif %}">
+                        {{ line.get_status_display }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">Go Back</a>
+</div>
+
+<style>
+    .table-danger { background-color: #f8d7da !important; }
+    .table-warning { background-color: #fff3cd !important; }
+    .table-success { background-color: #d1edff !important; }
+</style>
+{% endblock %}

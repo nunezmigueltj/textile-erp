@@ -1,0 +1,67 @@
+<!-- Identification -->
+<div class="text-danger">
+  {{ form.non_field_errors }}
+</div>
+
+<div class="mb-4">
+  <h6 class="section-header">Identification</h6>
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      {{ form.job.label_tag }}
+      {{ form.job }}
+      {% if form.job.errors %}
+      <div class="text-danger">{{ form.job.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-12 mb-3">
+      {{ form.order_number.label_tag }}
+      {{ form.order_number }}
+      {% if form.order_number.errors %}
+      <div class="text-danger">{{ form.order_number.errors }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="mb-4">
+  <h6 class="section-header">Client</h6>
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      {{ form.customer.label_tag }}
+      {{ form.customer }}
+      {% if form.customer.errors %}
+      <div class="text-danger">{{ form.customer.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-12 mb-3">
+      {{ form.po_ship_date.label_tag }}
+      {{ form.po_ship_date }}
+      {% if form.po_ship_date.errors %}
+      <div class="text-danger">{{ form.po_ship_date.errors }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="mb-4">
+  <h6 class="section-header">Product</h6>
+  <div class="row">
+    <div class="col-md-12 mb-3">
+      {{ form.style.label_tag }}
+      {{ form.style }}
+      {% if form.style.errors %}
+      <div class="text-danger">{{ form.style.errors }}</div>
+      {% endif %}
+    </div>
+
+    <div class="col-md-12 mb-3">
+      {{ form.total_pieces.label_tag }}
+      {{ form.total_pieces }}
+      {% if form.total_pieces.errors %}
+      <div class="text-danger">{{ form.total_pieces.errors }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>

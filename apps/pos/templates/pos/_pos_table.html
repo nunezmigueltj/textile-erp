@@ -1,0 +1,93 @@
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th scope="col">PO #</th>
+        <th scope="col">Demand #</th>
+        <th scope="col">Ordered Date</th>
+        <th scope="col">Expected Delivery</th>
+        <th scope="col">Fabrics</th>
+        <th scope="col">Yards</th>
+        <th scope="col">Status</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="table-group-divider">
+      {% for pos in page_obj %}
+      <tr>
+        <td>{{ pos.po_number }}</td>
+        <td>{{ pos.demand }}</td>
+        <td>{{ pos.order_date }}</td>
+        <td>{{ pos.expected_delivery }}</td>
+        <td>
+          {% if pos.fabrics.all %}
+            {% for fabriccolor in pos.fabrics.all %}
+              <p>{{ fabriccolor.fabric }} - {{ fabriccolor.fabric.fabric.vendor.company.name }}</p>
+            {% endfor %}
+          {% else %}
+            <p>No fabrics assigned.</p>
+          {% endif %}
+        </td>
+        <td>
+          {% if pos.fabrics.all %}
+            {% for fabriccolor in pos.fabrics.all %}
+              <p>{{ fabriccolor.yards }}</p>
+            {% endfor %}
+          {% else %}
+            <p>No fabrics assigned.</p>
+          {% endif %}
+        </td>
+        <td><span class="badge rounded-pill bg-warning text-dark p-2">{{ pos.status }}</span></td>
+        <td class="text-end">
+          <a href="{% url 'inventory:create_receipt_from_po' pos.id %}"
+              class="btn btn-sm btn-success">Receive</a>
+          <a href="{% url 'pos:edit_po' pos.id %}"
+              class="btn btn-sm btn-edit">Edit</a>
+          {% if request.user.is_superuser %}
+          <a href="{% url 'pos:deactivate_po' pos.id %}"
+              class="btn btn-sm btn-delete">Close</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <!-- Record counter -->
+    <div class="text-muted">
+      Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
+    </div>
+
+    <!-- Pagination -->
+    <nav>
+      <ul class="pagination mb-0">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link"
+            href="?q={{ q }}&rowsPerPage={{ rows_per_page }}&page={{ page_obj.previous_page_number }}">
+            Previous
+          </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        {% if num == page_obj.number %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% else %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ q }}&rowsPerPage={{ rows_per_page }}&page={{ num }}">{{ num }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?q={{ q }}&rowsPerPage={{ rows_per_page }}&page={{ page_obj.next_page_number }}">
+            Next
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>

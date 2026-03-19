@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Stock Fabric Receiver{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <h4 class="mb-3">Stock Fabric Receiver</h4>
+
+                <!-- General errors -->
+                <div class="text-danger">
+                    {{ receipt_form.non_field_errors }}
+                    {{ line_formset.non_field_errors }}
+                </div>
+
+                <!-- General information -->
+                <div class="mb-4">
+                    <h6 class="section-header">Details</h6>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            {{ receipt_form.receipt_number.label_tag }}
+                            {{ receipt_form.receipt_number }}
+                            {% if receipt_form.receipt_number.errors %}
+                            <div class="text-danger">{{ receipt_form.receipt_number.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            {{ receipt_form.received_date.label_tag }}
+                            {{ receipt_form.received_date }}
+                            {% if receipt_form.received_date.errors %}
+                            <div class="text-danger">{{ receipt_form.received_date.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-12 mb-3">
+                            {{ receipt_form.notes.label_tag }}
+                            {{ receipt_form.notes }}
+                            {% if receipt_form.notes.errors %}
+                            <div class="text-danger">{{ receipt_form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Received Fabrics -->
+                <div class="mb-5">
+                    <h6 class="section-header">Received Fabrics</h6>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ line_formset.management_form }}
+                            <table class="table table-bordered align-middle" id="fabric-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Fabric</th>
+                                        <th>Received Yards</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for form in line_formset %}
+                                    <tr>
+                                        {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                        {% endfor %}
+                                        <td>
+                                            {{ form.fabric }}
+                                            {% if form.fabric.errors %}
+                                            <div class="text-danger">{{ form.fabric.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ form.received_yards }}
+                                            {% if form.received_yards.errors %}
+                                            <div class="text-danger">{{ form.received_yards.errors }}</div>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ form.DELETE.as_hidden }}
+                                            <button type="button" class="btn btn-danger remove-row">X</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-outline-success w-100" id="add-row">+ Add
+                                Fabric</button>
+                            <br><br>
+
+                            <!-- empty_form /  duplicate -->
+                            <template id="empty-form-row">
+                                <tr>
+                                    <td>{{ line_formset.empty_form.fabric }}</td>
+                                    <td>{{ line_formset.empty_form.received_yards }}</td>
+                                    <td>
+                                        {{ line_formset.empty_form.DELETE.as_hidden }}
+                                        <button type="button" class="btn btn-danger remove-row">X</button>
+                                    </td>
+                                </tr>
+                            </template>
+
+                            {% if line_formset.errors %}
+                            <div class="text-danger">{{ line_formset.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- actions -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">Cancel</a>
+                    <div>
+                        <button type="submit" class="btn btn-success">Receive Fabric</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('add-row').addEventListener('click', function () {
+        let formCount = document.querySelectorAll('#fabric-table tbody tr').length;
+        let templateHtml = document.getElementById('empty-form-row').innerHTML.replace(/__prefix__/g, formCount);
+        document.querySelector('#fabric-table tbody').insertAdjacentHTML('beforeend', templateHtml);
+
+        let totalForms = document.getElementById('id_lines-TOTAL_FORMS');
+        if (totalForms) {
+            totalForms.value = formCount + 1;
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-row')) {
+            let row = e.target.closest('tr');
+            let deleteInput = row.querySelector('input[name$="DELETE"]');
+            if (deleteInput) {
+                deleteInput.value = 'on';
+                deleteInput.checked = true;
+            }
+            row.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

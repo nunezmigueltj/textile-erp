@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Demand Page
+{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2></h2>
+        <a href="{% url 'demand:add_demand' %}" class="btn btn-add">+ Add Demand</a>
+    </div>
+</div>
+<div class="mt-5">
+    {% include '_search_form.html' %}
+</div>
+
+{% include 'demand/_demand_table.html' %}
+
+{% if request.user.is_superuser %}
+<h3 class="mt-5 text-danger">Closed Demand</h3>
+
+{% include 'demand/_closed_demand_table.html' %}
+{% endif %}
+
+{% endblock %}
