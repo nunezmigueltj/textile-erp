@@ -126,25 +126,28 @@ def create_receipt_free(request):
         receipt_form = InventoryReceiptForm(request.POST)
 
         if receipt_form.is_valid():
-            receipt = receipt_form.save(commit=False)
-            receipt.created_by = request.user if request.user.is_authenticated else None
-            receipt.save()
+            with transaction.atomic():
+                receipt = receipt_form.save(commit=False)
+                receipt.created_by = request.user if request.user.is_authenticated else None
+                receipt.save()
 
-            # define prefix for the formset to avoid conflicts with other forms on the page
-            line_formset = LineFormSet(request.POST, instance=receipt, prefix='lines')
+                # define prefix for the formset to avoid conflicts with other forms on the page
+                line_formset = LineFormSet(request.POST, instance=receipt, prefix='lines')
 
-            if line_formset.is_valid():
-                lines = line_formset.save(commit=False)
-                for line in lines:
-                    line.expected_yards = line.received_yards
-                    line.save()
-                for line in line_formset.deleted_objects:
-                    line.delete()
-
-                return redirect('inventory:receipt_detail', receipt_id=receipt.id)
+                if line_formset.is_valid():
+                    lines = line_formset.save(commit=False)
+                    for line in lines:
+                        line.expected_yards = line.received_yards
+                        line.save()
+                    for line in line_formset.deleted_objects:
+                        line.delete()
+                else:
+                    # if not valid, rollback exception will be raised and transaction will be rolled back
+                    raise transaction.TransactionManagementError("Formset invalid")
+            return redirect('inventory:receipt_detail', receipt_id=receipt.id)
     else:
         receipt_form = InventoryReceiptForm()
-        line_formset = LineFormSet(instance=InventoryReceipt(), prefix='lines')
+        line_formset = LineFormSet(prefix='lines')
 
     return render(request, 'inventory/create_receipt_free.html', {
         'receipt_form': receipt_form,
