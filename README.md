@@ -48,7 +48,7 @@ Each app is independent, with its own CRUD operations, ensuring scalability and 
 - ├── fabrics/ 
 - ├── garments/ 
 - ├── inventory/ 
-└── pos/
+- └── pos/
 
 
 Each app contains its own **models.py**, **views.py**, **forms.py**, and **templates** to maintain modularity.
@@ -56,6 +56,7 @@ Each app contains its own **models.py**, **views.py**, **forms.py**, and **templ
 ---
 
 ## 📌 Roadmap
+- [ ] Pull Request (use fabric).
 - [ ] PDF report generation.
 - [ ] Bilingual support (English/Spanish).
 - [ ] Inventory dashboards with metrics.
