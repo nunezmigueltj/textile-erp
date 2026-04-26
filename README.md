@@ -57,8 +57,7 @@ Each app contains its own **models.py**, **views.py**, **forms.py**, and **templ
 
 ## 📌 Roadmap
 - [ ] Pull Request (use fabric).
-- [ ] PDF report generation.
-- [ ] Bilingual support (English/Spanish).
+- [ ] PDF report generation. (PO)
 - [ ] Inventory dashboards with metrics.
-- [ ] Advanced business rule validations.
+- [ ] User validations.
 
