@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Pull Request Page
+{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2></h2>
+        <a href="{% url 'pullrequest:pullrequest_issue' %}" class="btn btn-add">Issue Pull Request</a>
+    </div>
+</div>
+<div class="mt-5">
+    {% include '_search_form.html' %}
+</div>
+
+{% include 'pullrequest/_pullrequest_table.html' %}
+
+{% endblock %}

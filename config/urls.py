@@ -29,4 +29,5 @@ urlpatterns = [
     path('demand/', include('apps.demand.urls', namespace='demand')),
     path('pos/', include('apps.pos.urls', namespace='pos')),
     path('inventory/', include('apps.inventory.urls', namespace='inventory')),
+    path('pull-request/', include('apps.pullrequest.urls', namespace='pullrequest')),
 ]

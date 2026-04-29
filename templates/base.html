@@ -15,9 +15,13 @@
 
 <body class="bg-light">
   <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg border-bottom shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark border-bottom shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="{% url 'home:home' %}">TEXTILE ERP</a>
+      <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
+        aria-controls="sidebarMenu" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
       <div class="d-flex align-items-center ms-auto">
         {% if user.is_authenticated %}
         <div class="d-flex align-items-center gap-3">
@@ -42,8 +46,8 @@
 
   <div class="container-fluid">
     <div class="row">
-      <!-- Sidebar -->
-      <nav class="col-md-2 d-md-block bg-light sidebar vh-100">
+      <!-- Desktop Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar vh-100">
         <div class="list-group list-group-flush mt-3">
           <a href="{% url 'fabrics:fabrics_list' %}"
             class="list-group-item list-group-item-action {% if '/fabrics/' in request.path and not '/fabriccolors/' in request.path %}active{% endif %}">
@@ -75,6 +79,9 @@
           <a href="{% url 'inventory:inventory_list' %}" class="list-group-item list-group-item-action {% if '/inventory/' in request.path %}active{% endif %}">
             <i class="bi bi-box-seam me-2"></i> Inventory
           </a>
+          <a href="{% url 'pullrequest:pullrequest_list' %}" class="list-group-item list-group-item-action {% if '/pull-request/' in request.path %}active{% endif %}">
+            <i class="bi bi-clipboard2-fill me-2"></i> Pull Requests
+          </a>
           {% if request.user.is_superuser %}
           <a href="{% url 'users:users_list' %}"
             class="list-group-item list-group-item-action {% if '/users/' in request.path %}active{% endif %}">
@@ -85,9 +92,60 @@
       </nav>
 
       <!-- Main content -->
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-white shadow-sm rounded">
+      <main class="col-12 col-md-9 col-lg-10 px-md-4 py-4 bg-white shadow-sm rounded main-content">
         {% block content %}{% endblock %}
       </main>
+    </div>
+  </div>
+
+  <!-- Mobile Sidebar offcanvas -->
+  <div class="offcanvas offcanvas-start bg-light" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+      <div class="list-group list-group-flush mt-3">
+        <a href="{% url 'fabrics:fabrics_list' %}"
+          class="list-group-item list-group-item-action {% if '/fabrics/' in request.path and not '/fabriccolors/' in request.path %}active{% endif %}">
+          🧵 Fabrics
+        </a>
+        <a href="{% url 'colors:colors_list' %}"
+          class="list-group-item list-group-item-action {% if '/colors/' in request.path %}active{% endif %}">
+          <i class="bi bi-palette me-2"></i> Colors
+        </a>
+        <a href="{% url 'fabrics:fabriccolors_list' %}"
+          class="list-group-item list-group-item-action {% if '/fabriccolors/' in request.path %}active{% endif %}">
+          <i class="bi bi-stack me-2"></i> Fabric + Colors
+        </a>
+        <a href="{% url 'garments:garments_list' %}"
+          class="list-group-item list-group-item-action {% if '/garments/' in request.path %}active{% endif %}">
+          👕 Garments
+        </a>
+        <a href="{% url 'companies:companies_list' %}"
+          class="list-group-item list-group-item-action {% if '/companies/' in request.path %}active{% endif %}">
+          <i class="bi bi-buildings me-2"></i> Companies
+        </a>
+        <a href="{% url 'demand:demand_list' %}"
+          class="list-group-item list-group-item-action {% if '/demand/' in request.path %}active{% endif %}">
+          <i class="bi bi-file-earmark-spreadsheet"></i> Demand
+        </a>
+        <a href="{% url 'pos:pos_list' %}" class="list-group-item list-group-item-action {% if '/pos/' in request.path %}active{% endif %}">
+          <i class="bi bi-file-earmark-text me-2"></i> Purchase Orders
+        </a>
+        <a href="{% url 'inventory:inventory_list' %}" class="list-group-item list-group-item-action {% if '/inventory/' in request.path %}active{% endif %}">
+          <i class="bi bi-box-seam me-2"></i> Inventory
+        </a>
+        <a href="{% url 'pullrequest:pullrequest_list' %}" class="list-group-item list-group-item-action {% if '/pull-request/' in request.path %}active{% endif %}">
+          <i class="bi bi-clipboard2-fill me-2"></i> Pull Requests
+        </a>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'users:users_list' %}"
+          class="list-group-item list-group-item-action {% if '/users/' in request.path %}active{% endif %}">
+          <i class="bi bi-person me-2"></i> Users
+        </a>
+        {% endif %}
+      </div>
     </div>
   </div>
 
