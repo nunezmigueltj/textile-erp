@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'apps.demand',
     'apps.pos',
     'apps.inventory',
+    'apps.pullrequest',
 ]
 
 MIDDLEWARE = [

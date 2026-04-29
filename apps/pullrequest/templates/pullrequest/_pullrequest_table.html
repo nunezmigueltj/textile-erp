@@ -1,0 +1,78 @@
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">PO</th>
+                <th scope="col">Fabric Allocated</th>
+                <th scope="col">Yards Allocated</th>
+                <th scope="col">Fabric Notes</th>
+                <th scope="col">Status</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            {% for pull_request in page_obj %}
+            {% for pull_row in pull_request.lines.all %}
+            <tr>
+                <td>{{ pull_row.pull_request.purchase_order.po_number }}</td>
+                <td>{{ pull_row.inventory_roll }}</td>
+                <td>{{ pull_row.requested_yards }}</td>
+                <td>{{ pull_row.notes }}</td>
+                <td>
+                    <span
+                        class="badge {% if pull_row.status == 'UNDER' %}bg-danger{% elif pull_row.status == 'OVER' %}bg-warning{% elif pull_row.status == 'OK' %}bg-success{% else %}bg-secondary{% endif %}">
+                        {{ pull_row.get_status_display }}
+                    </span>
+                </td>
+                <td class="text-end">
+                    <a href="{% url 'pullrequest:pullrequest_list' %}"
+                        class="btn btn-sm btn-info">View</a>
+                        
+                    <a href="{% url 'pullrequest:pullrequest_list'  %}"
+                        class="btn btn-sm btn-edit">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <!-- Record counter -->
+        <div class="text-muted">
+            Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }}
+        </div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?q={{ q }}&rowsPerPage={{ rows_per_page }}&page={{ page_obj.previous_page_number }}">
+                        Previous
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?q={{ q }}&rowsPerPage={{ rows_per_page }}&page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?q={{ q }}&rowsPerPage={{ rows_per_page }}&page={{ page_obj.next_page_number }}">
+                        Next
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>

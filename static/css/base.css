@@ -134,6 +134,15 @@ input[type="color"] {
     height: 38px; /* match Bootstrap form-control height */
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
+.offcanvas-md.sidebar {
+  min-height: 100vh;
+  border-right: 1px solid #dee2e6;
+}
+
 .navbar {
   background-color: #23295f;
   color:whitesmoke;
@@ -144,5 +153,16 @@ input[type="color"] {
 .navbar a:active,
 .navbar a:focus{
   color:whitesmoke;
+}
+
+@media (max-width: 767.98px) {
+  .main-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .navbar .navbar-toggler {
+    border-color: rgba(255,255,255,.5);
+  }
 }
 
